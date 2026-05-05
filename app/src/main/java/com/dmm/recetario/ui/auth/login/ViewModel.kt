@@ -5,7 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.dmm.recetario.data.remote.RetrofitClient
+import com.dmm.recetario.di.RetrofitClient
 import kotlinx.coroutines.launch
 
 class LoginViewModel: ViewModel() {
