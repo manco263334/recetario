@@ -24,6 +24,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -87,7 +88,10 @@ private fun LoginContent (
                 LoginError (message = uiState.message, onRetry = onRetry)
             }
             else -> {
-                LoginForm (onLogin = onLogin)
+                LoginForm (
+                    onLogin = onLogin,
+                    onNavigateToRegister = onNavigateToRegister
+                )
             }
         }
     }
@@ -155,7 +159,8 @@ fun LoginError (
 
 @Composable
 private fun LoginForm (
-    onLogin: (String, String) -> Unit
+    onLogin: (String, String) -> Unit,
+    onNavigateToRegister: () -> Unit
 ) {
     var email by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
@@ -222,6 +227,12 @@ private fun LoginForm (
             fontSize = 16.sp,
             fontWeight = FontWeight.Bold
         )
+    }
+
+    Spacer(modifier = Modifier.height(8.dp))
+
+    TextButton(onClick = onNavigateToRegister) {
+        Text("¿No tienes cuenta? Regístrate aquí, papu")
     }
 }
 
