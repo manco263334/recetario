@@ -1,15 +1,25 @@
 package com.dmm.recetario.domain.repository
 
 import com.dmm.recetario.domain.model.User
+import retrofit2.Response
+import retrofit2.http.DELETE
+import retrofit2.http.GET
+import retrofit2.http.POST
+import retrofit2.http.PUT
 
 interface UserRepository {
-    fun createUser(data: User): User
+    @POST("users")
+    suspend fun createUser(data: User): Response<User>
 
-    fun getAllUsers(): List<User>
+    @GET("users")
+    suspend fun getAllUsers(): Response<List<User>>
 
-    fun getUser(id: String): User
+    @GET("users/{id}")
+    suspend fun getUser(id: String): Response<User>
 
-    fun updateUser(id: String, data: User): User
+    @PUT("users/{id}")
+    suspend fun updateUser(id: String, data: User): Response<User>
 
-    fun deleteUser(id: String)
+    @DELETE("users/{id}")
+    suspend fun deleteUser(id: String): Response<Unit>
 }

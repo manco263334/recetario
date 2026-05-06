@@ -1,4 +1,4 @@
-package com.dmm.recetario.ui.auth.login
+package com.dmm.recetario.ui.auth.register
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -7,40 +7,43 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dmm.recetario.data.local.TokenManager
 import com.dmm.recetario.data.service.AuthService
-import com.dmm.recetario.domain.repository.LoginData
+import com.dmm.recetario.domain.repository.RegisterData
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class LoginViewModel @Inject constructor (
+class RegisterViewModel @Inject constructor (
     private val service: AuthService,
     private val tokenManager: TokenManager
 ): ViewModel() {
-    var uiState by mutableStateOf<LoginUiState>(LoginUiState.Idle)
+    var uiState by mutableStateOf<RegisterUiState>(RegisterUiState.Idle)
         private set
 
-    fun login (
+    fun register (
+        name: String,
         email: String,
-        password: String
+        password: String,
+        phone: String?,
+        username: String?
     ) {
-        uiState = LoginUiState.Loading
+        uiState = RegisterUiState.Loading
 
         viewModelScope.launch {
             try {
-                val data = LoginData(email, password)
-                val response = service.login(data)
+                val data = RegisterData(name, email, password, phone, username)
+                val response = service.register(data)
                 val token = response.token
 
                 tokenManager.saveToken(token)
-                uiState = LoginUiState.Success(token)
+                uiState = RegisterUiState.Success(token)
             } catch (e: Exception) {
-                uiState = LoginUiState.Error("Error: ${e.message}")
+                uiState = RegisterUiState.Error("Error: ${e.message}")
             }
         }
     }
 
     fun resetToIdle () {
-        uiState = LoginUiState.Idle
+        uiState = RegisterUiState.Idle
     }
 }

@@ -1,6 +1,6 @@
 package com.dmm.recetario.utils.mapper
 
-import com.dmm.recetario.data.remote.dto.RecipeDTO
+import com.dmm.recetario.data.model.dto.RecipeDTO
 import com.dmm.recetario.domain.model.Recipe
 
 fun RecipeDTO.toDomain(): Recipe {

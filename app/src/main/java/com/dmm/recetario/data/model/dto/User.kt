@@ -1,4 +1,4 @@
-package com.dmm.recetario.data.remote.dto
+package com.dmm.recetario.data.model.dto
 
 data class UserDTO (
     val id: String,

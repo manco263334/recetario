@@ -1,15 +1,25 @@
 package com.dmm.recetario.domain.repository
 
-import com.dmm.recetario.navigation.Recipe
+import com.dmm.recetario.domain.model.Recipe
+import retrofit2.Response
+import retrofit2.http.DELETE
+import retrofit2.http.GET
+import retrofit2.http.POST
+import retrofit2.http.PUT
 
 interface RecipeRepository {
-    fun createRecipe(data: Recipe): Recipe
+    @POST("recipes")
+    suspend fun createRecipe(data: Recipe): Response<Recipe>
 
-    fun getAllRecipes(): List<Recipe>
+    @GET("recipes")
+    suspend fun getAllRecipes(): Response<List<Recipe>>
 
-    fun getRecipe(id: String): Recipe
+    @GET("recipes/{id}")
+    suspend fun getRecipe(id: String): Response<Recipe>
 
-    fun updateRecipe(id: String, data: Recipe): Recipe
+    @PUT("recipes/{id}")
+    suspend fun updateRecipe(id: String, data: Recipe): Response<Recipe>
 
-    fun deleteRecipe(id: String)
+    @DELETE("recipes/{id}")
+    suspend fun deleteRecipe(id: String): Response<Unit>
 }

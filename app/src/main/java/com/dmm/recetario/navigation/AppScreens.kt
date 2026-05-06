@@ -9,7 +9,7 @@ object Login
 object Register
 
 @Serializable
-object Main
+object Home
 
 @Serializable
 object Settings

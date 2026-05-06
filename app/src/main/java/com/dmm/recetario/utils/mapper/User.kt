@@ -1,6 +1,6 @@
 package com.dmm.recetario.utils.mapper
 
-import com.dmm.recetario.data.remote.dto.UserDTO
+import com.dmm.recetario.data.model.dto.UserDTO
 import com.dmm.recetario.domain.model.User
 
 fun UserDTO.toDomain(): User {
