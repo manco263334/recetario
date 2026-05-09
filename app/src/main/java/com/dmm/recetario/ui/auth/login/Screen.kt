@@ -1,5 +1,8 @@
 package com.dmm.recetario.ui.auth.login
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -13,11 +16,20 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -25,6 +37,7 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -33,8 +46,10 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -54,6 +69,7 @@ fun LoginScreen (
     LoginContent (
         uiState = viewModel.uiState,
         onLogin = viewModel::login,
+        onLoginAsGuest = viewModel::loginAsGuest,
         onRetry = viewModel::resetToIdle,
         onNavigateToHome = onNavigateToHome,
         onNavigateToRegister = onNavigateToRegister
@@ -64,6 +80,7 @@ fun LoginScreen (
 private fun LoginContent (
     uiState: LoginUiState,
     onLogin: (String, String) -> Unit,
+    onLoginAsGuest: () -> Unit,
     onRetry: () -> Unit,
     onNavigateToHome: () -> Unit,
     onNavigateToRegister: () -> Unit
@@ -77,7 +94,15 @@ private fun LoginContent (
     Column (
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFF1E1E1E))
+            .background(
+                Brush.verticalGradient(
+                    colors = listOf(
+                        Color(0xFF121212),
+                        Color(0xFF1E1E1E),
+                        Color(0xFF252525)
+                    )
+                )
+            )
             .padding(24.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
@@ -90,6 +115,7 @@ private fun LoginContent (
             else -> {
                 LoginForm (
                     onLogin = onLogin,
+                    onLoginAsGuest = onLoginAsGuest,
                     onNavigateToRegister = onNavigateToRegister
                 )
             }
@@ -141,7 +167,7 @@ fun LoginError (
         Button (
             onClick = onRetry,
             shape = RoundedCornerShape(12.dp),
-            colors = ButtonDefaults.buttonColors(
+            colors = ButtonDefaults.buttonColors (
                 containerColor = MaterialTheme.colorScheme.error
             )
         ) {
@@ -160,6 +186,7 @@ fun LoginError (
 @Composable
 private fun LoginForm (
     onLogin: (String, String) -> Unit,
+    onLoginAsGuest: () -> Unit,
     onNavigateToRegister: () -> Unit
 ) {
     var email by rememberSaveable { mutableStateOf("") }
@@ -167,72 +194,169 @@ private fun LoginForm (
     var passwordVisible by rememberSaveable { mutableStateOf(false) }
     val keyboardController = LocalSoftwareKeyboardController.current
 
-    Spacer(modifier = Modifier.height(8.dp))
-
-    Text (
-        text = "Login",
-        fontSize = 24.sp,
-        color = Color.White,
-        fontWeight = FontWeight.Bold
-    )
-
-    Spacer(modifier = Modifier.height(8.dp))
-
-    Text (
-        text = "Apartado de login",
-        fontSize = 16.sp,
-        color = Color.LightGray
-    )
-
-    Spacer(modifier = Modifier.height(24.dp))
-
-    OutlinedTextField (
-        value = email,
-        onValueChange = { email = it },
-        label = { Text("Email") },
-        singleLine = true,
-        keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Email),
-        modifier = Modifier.fillMaxWidth(),
-    )
-
-    Spacer(modifier = Modifier.height(16.dp))
-
-    OutlinedTextField (
-        value = password,
-        onValueChange = { password = it },
-        label = { Text("Contraseña") },
-        singleLine = true,
-        keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Password),
-        visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-        trailingIcon = {
-            IconButton(onClick = { passwordVisible = !passwordVisible }) {  }
-        },
-        modifier = Modifier.fillMaxWidth()
-    )
-
-    Spacer(modifier = Modifier.height(24.dp))
-
-    OutlinedButton (
-        onClick = {
-            keyboardController?.hide()
-            onLogin(email, password)
-        },
-        shape = RoundedCornerShape(8.dp),
-        colors = ButtonDefaults.buttonColors(containerColor = Color.Cyan),
-        modifier = Modifier.padding(top = 8.dp)
+    AnimatedVisibility (
+        visible = true,
+        enter = fadeIn() + slideInVertically()
     ) {
-        Text (
-            text =  "Iniciar sesión".uppercase(),
-            color = Color.Black,
-            fontSize = 16.sp,
-            fontWeight = FontWeight.Bold
-        )
-    }
+        Card (
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(24.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = Color(0xFF2A2A2A)
+            ),
+            elevation = CardDefaults.cardElevation(8.dp)
+        ) {
+            Column(
+                modifier = Modifier.padding(24.dp)
+            ) {
+                Spacer(modifier = Modifier.height(8.dp))
 
-    Spacer(modifier = Modifier.height(8.dp))
+                Icon (
+                    imageVector = Icons.Default.Lock,
+                    contentDescription = null,
+                    tint = Color.Cyan,
+                    modifier = Modifier.size(72.dp)
+                )
 
-    TextButton(onClick = onNavigateToRegister) {
-        Text("¿No tienes cuenta? Regístrate aquí, papu")
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Text (
+                    text = "Login",
+                    fontSize = 24.sp,
+                    color = MaterialTheme.colorScheme.onBackground,
+                    fontWeight = FontWeight.Bold
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Text (
+                    text = "Inicia sesión para continuar",
+                    fontSize = 16.sp,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                OutlinedTextField (
+                    value = email,
+                    onValueChange = { email = it },
+                    label = { Text("Email") },
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Email),
+                    modifier = Modifier.fillMaxWidth(),
+                    textStyle = TextStyle(color = MaterialTheme.colorScheme.onBackground),
+                    colors = TextFieldDefaults.colors (
+                        focusedTextColor = MaterialTheme.colorScheme.onBackground,
+                        unfocusedTextColor = MaterialTheme.colorScheme.onBackground,
+                        focusedContainerColor = Color.Transparent,
+                        unfocusedContainerColor = Color.Transparent,
+                        cursorColor = MaterialTheme.colorScheme.onBackground
+                    ),
+                    leadingIcon = {
+                        Icon(Icons.Default.Email, null)
+                    },
+                    placeholder = {
+                        Text("correo@gmail.com")
+                    }
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                OutlinedTextField (
+                    value = password,
+                    onValueChange = { password = it },
+                    label = { Text("Contraseña") },
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Password),
+                    visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                    trailingIcon = {
+                        IconButton (
+                            onClick = { passwordVisible = !passwordVisible }
+                        ) {
+                            Icon (
+                                imageVector =
+                                    if(passwordVisible)
+                                        Icons.Default.Visibility
+                                    else
+                                        Icons.Default.VisibilityOff,
+                                contentDescription = null
+                            )
+                        }
+                    },
+                    leadingIcon = {
+                        Icon(Icons.Default.Lock, null)
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                Button (
+                    onClick = {
+                        keyboardController?.hide()
+                        onLogin(email, password)
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(56.dp),
+                    shape = RoundedCornerShape(16.dp),
+                    colors = ButtonDefaults.buttonColors (
+                        containerColor = Color(0xFF00C2FF)
+                    )
+                ) {
+                    Text (
+                        text =  "Iniciar sesión".uppercase(),
+                        color = MaterialTheme.colorScheme.onSurface,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+
+                HorizontalDivider (
+                    modifier = Modifier.padding(vertical = 16.dp),
+                    color = Color.Gray.copy(alpha = 0.3f)
+                )
+
+                OutlinedButton (
+                    onClick = onLoginAsGuest,
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(14.dp)
+                ) {
+                    Icon (
+                        imageVector = Icons.Default.Person,
+                        contentDescription = null
+                    )
+
+                    Spacer(modifier = Modifier.width(8.dp))
+
+                    Text("Entrar como invitado")
+                }
+
+                HorizontalDivider (
+                    modifier = Modifier.padding(vertical = 16.dp),
+                    color = Color.Gray.copy(alpha = 0.3f)
+                )
+
+                OutlinedButton (
+                    onClick = {  },
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(14.dp)
+                ) {
+                    Icon(Icons.Default.AccountCircle, null)
+                    Text("Continuar con Google")
+                }
+
+                HorizontalDivider (
+                    modifier = Modifier.padding(vertical = 16.dp),
+                    color = Color.Gray.copy(alpha = 0.3f)
+                )
+
+                TextButton(onClick = onNavigateToRegister) {
+                    Text("¿No tienes cuenta? Regístrate aquí, papu")
+                }
+
+            }
+        }
     }
 }
 
@@ -244,7 +368,8 @@ private fun LoginScreenPreview() {
         onLogin = { _, _ -> },
         onRetry = {},
         onNavigateToHome = {},
-        onNavigateToRegister = {}
+        onNavigateToRegister = {},
+        onLoginAsGuest = {}
     )
 }
 

@@ -19,7 +19,7 @@ class UserService @Inject constructor (
     suspend fun getAllUsers(): List<User> {
         return withContext(Dispatchers.IO) {
             val response = repository.getAllUsers()
-            response.body() ?: emptyList()
+            response.body()?.content ?: emptyList()
         }
     }
 

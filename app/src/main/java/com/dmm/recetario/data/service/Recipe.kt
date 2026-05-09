@@ -19,7 +19,7 @@ class RecipeService @Inject constructor (
     suspend fun getAllRecipes(): List<Recipe> {
         return withContext(Dispatchers.IO) {
             val response = repository.getAllRecipes()
-            response.body() ?: emptyList()
+            response.body()?.content ?: emptyList()
         }
     }
 

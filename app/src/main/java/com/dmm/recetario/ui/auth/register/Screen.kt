@@ -1,11 +1,15 @@
 package com.dmm.recetario.ui.auth.register
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.slideInVertically
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -14,13 +18,30 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AlternateEmail
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.PersonAdd
+import androidx.compose.material.icons.filled.Phone
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -33,11 +54,18 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 
 @Composable
@@ -69,16 +97,33 @@ fun RegisterContent (
         }
     }
 
-    when (uiState) {
-        is RegisterUiState.Loading -> CircularProgressIndicator()
-        is RegisterUiState.Error -> {
-            RegisterError (message = uiState.message, onRetry = onRetry)
-        }
-        else -> {
-            RegisterForm (
-                onRegister = onRegister,
-                onNavigateToLogin = onNavigateToLogin
+    Column (
+        modifier = Modifier
+            .fillMaxSize()
+            .background(
+                Brush.verticalGradient(
+                    colors = listOf(
+                        Color(0xFF121212),
+                        Color(0xFF1E1E1E),
+                        Color(0xFF252525)
+                    )
+                )
             )
+            .padding(24.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        when (uiState) {
+            is RegisterUiState.Loading -> CircularProgressIndicator()
+            is RegisterUiState.Error -> {
+                RegisterError (message = uiState.message, onRetry = onRetry)
+            }
+            else -> {
+                RegisterForm (
+                    onRegister = onRegister,
+                    onNavigateToLogin = onNavigateToLogin
+                )
+            }
         }
     }
 }
@@ -139,77 +184,234 @@ private fun RegisterForm (
     var password by rememberSaveable { mutableStateOf("") }
     var phone by rememberSaveable { mutableStateOf("") }
     var username by rememberSaveable { mutableStateOf("") }
+    var passwordVisible by rememberSaveable {
+        mutableStateOf(false)
+    }
 
-    Column (
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(24.dp)
-            .verticalScroll(rememberScrollState()), // Por si son muchos campos
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+    val keyboardController = LocalSoftwareKeyboardController.current
+
+    AnimatedVisibility (
+        visible = true,
+        enter = fadeIn() + slideInVertically()
     ) {
-        Text (
-            text = "Crea tu cuenta",
-            style = MaterialTheme.typography.headlineMedium
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Campos Obligatorios
-        OutlinedTextField (
-            value = name,
-            onValueChange = { name = it },
-            label = { Text("Nombre completo *") },
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        OutlinedTextField (
-            value = email,
-            onValueChange = { email = it },
-            label = { Text("Email *") },
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        OutlinedTextField (
-            value = password,
-            onValueChange = { password = it },
-            label = { Text("Password *") },
-            visualTransformation = PasswordVisualTransformation(),
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        // Campos Opcionales
-        OutlinedTextField (
-            value = phone, 
-            onValueChange = { phone = it }, 
-            label = { Text("Teléfono (Opcional)") }, 
-            modifier = Modifier.fillMaxWidth()
-        )
-        
-        OutlinedTextField (
-            value = username, 
-            onValueChange = { username = it }, 
-            label = { Text("Apodo (Opcional)") }, 
-            modifier = Modifier.fillMaxWidth(), 
-        )
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        Button (
+        Card (
             modifier = Modifier.fillMaxWidth(),
-            onClick = { onRegister(name, email, password, phone.ifBlank { null }, username.ifBlank { null }) },
-            enabled = name.isNotBlank() && email.isNotBlank() && password.isNotBlank()
+            shape = RoundedCornerShape(24.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = Color(0xFF2A2A2A)
+            ),
+            elevation = CardDefaults.cardElevation(8.dp)
         ) {
-            Text("Registrarme de One")
-        }
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+                    .padding(24.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Icon (
+                    imageVector = Icons.Default.PersonAdd,
+                    contentDescription = null,
+                    tint = Color(0xFF00C2FF),
+                    modifier = Modifier.size(72.dp)
+                )
 
-        Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(16.dp))
 
-        TextButton (
-            modifier = Modifier.fillMaxWidth(),
-            onClick = onNavigateToLogin
-        ) {
-            Text("Ya tengo una cuenta")
+                Text (
+                    text = "Crear cuenta",
+                    style = MaterialTheme.typography.headlineMedium,
+                    color = Color.White,
+                    fontWeight = FontWeight.Bold
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Text (
+                    text = "Únete y comienza ahora",
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = Color.LightGray
+                )
+
+                Spacer(modifier = Modifier.height(32.dp))
+
+                Card (
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(28.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = Color(0xFF1E1E1E)
+                    ),
+                    elevation = CardDefaults.cardElevation(
+                        defaultElevation = 10.dp
+                    )
+                ) {
+
+                    Column (
+                        modifier = Modifier.padding(24.dp),
+                        verticalArrangement = Arrangement.spacedBy(18.dp)
+                    ) {
+
+                        // Nombre
+                        OutlinedTextField (
+                            value = name,
+                            onValueChange = { name = it },
+                            label = { Text("Nombre completo") },
+                            placeholder = {
+                                Text("Juan Pérez")
+                            },
+                            leadingIcon = {
+                                Icon(Icons.Default.Person, null)
+                            },
+                            singleLine = true,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+
+                        // Email
+                        OutlinedTextField (
+                            value = email,
+                            onValueChange = { email = it },
+                            label = { Text("Correo electrónico") },
+                            placeholder = {
+                                Text("correo@gmail.com")
+                            },
+                            leadingIcon = {
+                                Icon(Icons.Default.Email, null)
+                            },
+                            keyboardOptions = KeyboardOptions(
+                                keyboardType = KeyboardType.Email
+                            ),
+                            singleLine = true,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+
+                        // Password
+                        OutlinedTextField (
+                            value = password,
+                            onValueChange = { password = it },
+                            label = { Text("Contraseña") },
+                            supportingText = {
+                                Text("Debe contener mínimo 8 caracteres")
+                            },
+                            leadingIcon = {
+                                Icon(Icons.Default.Lock, null)
+                            },
+                            trailingIcon = {
+
+                                IconButton (
+                                    onClick = {
+                                        passwordVisible =
+                                            !passwordVisible
+                                    }
+                                ) {
+
+                                    Icon(
+                                        imageVector =
+                                            if(passwordVisible)
+                                                Icons.Default.Visibility
+                                            else
+                                                Icons.Default.VisibilityOff,
+                                        contentDescription = null
+                                    )
+                                }
+                            },
+                            visualTransformation =
+                                if(passwordVisible)
+                                    VisualTransformation.None
+                                else
+                                    PasswordVisualTransformation(),
+                            singleLine = true,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+
+                        // Teléfono
+                        OutlinedTextField (
+                            value = phone,
+                            onValueChange = { phone = it },
+                            label = { Text("Teléfono (Opcional)") },
+                            leadingIcon = {
+                                Icon(Icons.Default.Phone, null)
+                            },
+                            keyboardOptions = KeyboardOptions (
+                                keyboardType = KeyboardType.Phone
+                            ),
+                            singleLine = true,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+
+                        // Username
+                        OutlinedTextField (
+                            value = username,
+                            onValueChange = { username = it },
+                            label = { Text("Apodo (Opcional)") },
+                            leadingIcon = {
+                                Icon(Icons.Default.AlternateEmail, null)
+                            },
+                            singleLine = true,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        // Botón principal
+                        Button(
+                            onClick = {
+                                keyboardController?.hide()
+
+                                onRegister(
+                                    name,
+                                    email,
+                                    password,
+                                    phone.ifBlank { null },
+                                    username.ifBlank { null }
+                                )
+                            },
+                            enabled =
+                                name.isNotBlank() &&
+                                        email.isNotBlank() &&
+                                        password.isNotBlank(),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(56.dp),
+                            shape = RoundedCornerShape(18.dp),
+                            colors = ButtonDefaults.buttonColors (
+                                containerColor = Color(0xFF00C2FF)
+                            )
+                        ) {
+
+                            Icon(
+                                Icons.Default.Check,
+                                contentDescription = null
+                            )
+
+                            Spacer(modifier = Modifier.width(8.dp))
+
+                            Text(
+                                text = "Crear cuenta",
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 16.sp,
+                                color = Color.Black
+                            )
+                        }
+
+                        HorizontalDivider (
+                            color = Color.Gray.copy(alpha = 0.3f)
+                        )
+
+                        // Navegar al login
+                        TextButton(
+                            modifier = Modifier.fillMaxWidth(),
+                            onClick = onNavigateToLogin
+                        ) {
+
+                            Text(
+                                text = "¿Ya tienes cuenta? Inicia sesión",
+                                color = Color(0xFF00C2FF)
+                            )
+                        }
+                    }
+                }
+            }
         }
     }
 }

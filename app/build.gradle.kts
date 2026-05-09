@@ -12,15 +12,15 @@ plugins {
 android {
     namespace = "com.dmm.recetario"
     compileSdk {
-        version = release(36) {
-            minorApiLevel = 1
+        version = release(37) {
+            minorApiLevel = 0
         }
     }
 
     defaultConfig {
         applicationId = "com.dmm.recetario"
         minSdk = 29
-        targetSdk = 36
+        targetSdk = 37
         versionCode = 1
         versionName = "1.0"
 
@@ -52,6 +52,7 @@ hilt {
 dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.androidx.lifecycle.viewmodel.ktx)
     implementation(libs.androidx.activity.compose)
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.compose.ui)
@@ -61,15 +62,24 @@ dependencies {
     implementation(libs.androidx.compose.material.icons.extended)
 
     implementation(libs.valiktor.core)
-    implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.datastore.preferences)
     implementation(libs.coil.compose)
+
+    implementation(libs.androidx.navigation3.runtime)
+    implementation(libs.androidx.navigation3.ui)
+    implementation(libs.androidx.lifecycle.viewmodel.navigation3)
+    implementation(libs.androidx.material3.adaptive)
+    implementation(libs.androidx.material3.adaptive.navigation3)
+
     implementation(libs.kotlinx.serialization.json)
 
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
     implementation(libs.logging.interceptor)
     implementation(libs.firebase.crashlytics)
+    implementation(libs.androidx.compose.animation)
+    implementation(libs.androidx.compose.adaptive.navigation3)
+    implementation(libs.androidx.navigation.runtime.ktx)
 
     ksp(libs.androidx.room.compiler)
     annotationProcessor(libs.androidx.room.compiler)

@@ -13,5 +13,5 @@ data class Recipe (
     val icon: String?,
 
     val creator: String?,
-    val categories: List<String>?
+    var categories: List<String>?
 )

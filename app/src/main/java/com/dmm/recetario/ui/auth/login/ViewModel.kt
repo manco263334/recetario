@@ -40,6 +40,14 @@ class LoginViewModel @Inject constructor (
         }
     }
 
+    fun loginAsGuest () {
+        viewModelScope.launch {
+            val token = ""
+            tokenManager.saveToken(token)
+            uiState = LoginUiState.Success(token)
+        }
+    }
+
     fun resetToIdle () {
         uiState = LoginUiState.Idle
     }

@@ -1,4 +1,4 @@
-package com.dmm.recetario.utils.mapper
+package com.dmm.recetario.core.utils.mapper
 
 import com.dmm.recetario.data.model.dto.CategoryDTO
 import com.dmm.recetario.domain.model.Category

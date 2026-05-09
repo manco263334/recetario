@@ -1,6 +1,6 @@
 package com.dmm.recetario.domain.model
 
-data class User (
+open class User (
     val id: String,
     val name: String,
     val email: String,
@@ -10,4 +10,6 @@ data class User (
     val icon: String?,
 
     val recipes: List<String>?
-)
+) {
+    override fun toString(): String = "User(id=$id, name=$name, email=$email, role=$role, phone=$phone, username=$username, icon=$icon, recipes=$recipes)"
+}

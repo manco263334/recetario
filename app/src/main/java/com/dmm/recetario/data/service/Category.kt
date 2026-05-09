@@ -19,7 +19,7 @@ class CategoryService @Inject constructor (
     suspend fun getAllCategories(): List<Category> {
         return withContext(Dispatchers.IO) {
             val response = repository.getAllCategories()
-            response.body() ?: emptyList()
+            response.body()?.content ?: emptyList()
         }
     }
 

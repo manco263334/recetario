@@ -11,6 +11,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation3.runtime.rememberNavBackStack
 import com.dmm.recetario.navigation.AppNavigation
 import com.dmm.recetario.ui.theme.RecetarioTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -25,14 +26,14 @@ class MainActivity: ComponentActivity() {
         enableEdgeToEdge()
 
         setContent {
-            val navController = rememberNavController()
             val startDestination = viewModel.startDestination
 
             RecetarioTheme {
                 if (startDestination != null) {
+                    val backStack = rememberNavBackStack(startDestination)
+
                     AppNavigation (
-                        navController = navController,
-                        startDestination = startDestination
+                        backStack = backStack
                     )
                 } else {
                     Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -43,3 +44,32 @@ class MainActivity: ComponentActivity() {
         }
     }
 }
+
+//@AndroidEntryPoint
+//class MainActivity: ComponentActivity() {
+//    private val viewModel: MainViewModel by viewModels()
+//
+//    override fun onCreate(savedInstanceState: Bundle?) {
+//        super.onCreate(savedInstanceState)
+//
+//        enableEdgeToEdge()
+//
+//        setContent {
+//            val navController = rememberNavController()
+//            val startDestination = viewModel.startDestination
+//
+//            RecetarioTheme {
+//                if (startDestination != null) {
+//                    AppNavigation (
+//                        navController = navController,
+//                        startDestination = startDestination
+//                    )
+//                } else {
+//                    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+//                        CircularProgressIndicator()
+//                    }
+//                }
+//            }
+//        }
+//    }
+//}
