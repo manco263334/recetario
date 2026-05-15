@@ -1,10 +1,10 @@
 package com.dmm.recetario.data.service
 
+import com.dmm.recetario.data.repository.RecipeRepository
 import com.dmm.recetario.domain.model.Recipe
-import com.dmm.recetario.domain.repository.RecipeRepository
+import jakarta.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import javax.inject.Inject
 
 class RecipeService @Inject constructor (
     private val repository: RecipeRepository
@@ -12,21 +12,21 @@ class RecipeService @Inject constructor (
     suspend fun createRecipe(data: Recipe): Recipe {
         return withContext(Dispatchers.IO) {
             val response = repository.createRecipe(data)
-            response.body()!!
+            response
         }
     }
 
     suspend fun getAllRecipes(): List<Recipe> {
         return withContext(Dispatchers.IO) {
             val response = repository.getAllRecipes()
-            response.body()?.content ?: emptyList()
+            response
         }
     }
 
     suspend fun getRecipe(id: String): Recipe {
         return withContext(Dispatchers.IO) {
             val response = repository.getRecipe(id)
-            response.body()!!
+            response
         }
     }
 
@@ -36,7 +36,7 @@ class RecipeService @Inject constructor (
     ): Recipe {
         return withContext(Dispatchers.IO) {
             val response = repository.updateRecipe(id, data)
-            response.body()!!
+            response
         }
     }
 

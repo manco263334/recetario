@@ -13,7 +13,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.dmm.recetario.data.local.UserSaved
 import com.dmm.recetario.ui.theme.PurpleGrey40
 import kotlinx.coroutines.launch
 

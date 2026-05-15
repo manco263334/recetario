@@ -67,6 +67,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import com.dmm.recetario.ui.components.CookingLoadingScreen
 
 @Composable
 fun RegisterScreen (
@@ -114,7 +115,7 @@ fun RegisterContent (
         verticalArrangement = Arrangement.Center
     ) {
         when (uiState) {
-            is RegisterUiState.Loading -> CircularProgressIndicator()
+            is RegisterUiState.Loading -> CookingLoadingScreen()
             is RegisterUiState.Error -> {
                 RegisterError (message = uiState.message, onRetry = onRetry)
             }

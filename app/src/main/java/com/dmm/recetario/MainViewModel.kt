@@ -6,8 +6,9 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dmm.recetario.data.local.TokenManager
-import com.dmm.recetario.navigation.Home
-import com.dmm.recetario.navigation.Login
+import com.dmm.recetario.data.local.UserManager
+import com.dmm.recetario.domain.model.AnonymousUser
+import com.dmm.recetario.domain.model.User
 import com.dmm.recetario.navigation.Routes
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
@@ -16,13 +17,18 @@ import kotlinx.coroutines.launch
 
 @HiltViewModel
 class MainViewModel @Inject constructor (
-    private val tokenManager: TokenManager
+    private val tokenManager: TokenManager,
+    private val userManager: UserManager
 ): ViewModel() {
     var startDestination by mutableStateOf<Routes?>(null)
         private set
 
+    var user by mutableStateOf<User?>(null)
+        private set
+
     init {
         checkAuthStatus()
+        initUser()
     }
 
     private fun checkAuthStatus() {
@@ -31,23 +37,10 @@ class MainViewModel @Inject constructor (
             startDestination = if (token != null) Routes.Home else Routes.Login
         }
     }
-}
 
-//@HiltViewModel
-//class MainViewModel @Inject constructor (
-//    private val tokenManager: TokenManager
-//): ViewModel() {
-//    var startDestination by mutableStateOf<Any?>(null)
-//        private set
-//
-//    init {
-//        checkAuthStatus()
-//    }
-//
-//    private fun checkAuthStatus() {
-//        viewModelScope.launch {
-//            val token = tokenManager.token.firstOrNull()
-//            startDestination = if (token != null) Home else Login
-//        }
-//    }
-//}
+    private fun initUser() {
+        viewModelScope.launch {
+            user = userManager.getUser() ?: AnonymousUser()
+        }
+    }
+}

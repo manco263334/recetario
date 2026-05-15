@@ -1,8 +1,8 @@
 package com.dmm.recetario.data.remote.retrofit
 
+import com.dmm.recetario.data.model.dto.UserDTO
 import com.dmm.recetario.domain.model.PageResponse
 import com.dmm.recetario.domain.model.User
-import com.dmm.recetario.domain.repository.UserRepository
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
@@ -11,19 +11,16 @@ import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Path
 
-interface APIUserService: UserRepository {
-    @POST("users")
-    override suspend fun createUser(@Body data: User): Response<User>
-
+interface APIUserService {
     @GET("users")
-    override suspend fun getAllUsers(): Response<PageResponse<User>>
+    suspend fun getAllUsers(): Response<PageResponse<UserDTO>>
 
     @GET("users/{id}")
-    override suspend fun getUser(@Path("id") id: String): Response<User>
+    suspend fun getUser(@Path("id") id: String): Response<UserDTO>
 
     @PUT("users/{id}")
-    override suspend fun updateUser(@Path("id") id: String, @Body data: User): Response<User>
+    suspend fun updateUser(@Path("id") id: String, @Body data: User): Response<UserDTO>
 
     @DELETE("users/{id}")
-    override suspend fun deleteUser(@Path("id") id: String): Response<Unit>
+    suspend fun deleteUser(@Path("id") id: String): Response<Unit>
 }

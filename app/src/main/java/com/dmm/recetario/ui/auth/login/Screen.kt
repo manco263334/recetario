@@ -1,5 +1,6 @@
 package com.dmm.recetario.ui.auth.login
 
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.slideInVertically
@@ -59,6 +60,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import com.dmm.recetario.ui.components.CookingLoadingScreen
 
 @Composable
 fun LoginScreen (
@@ -85,6 +87,8 @@ private fun LoginContent (
     onNavigateToHome: () -> Unit,
     onNavigateToRegister: () -> Unit
 ) {
+    Log.d("LoginScreen", "uiState: $uiState")
+
     LaunchedEffect(uiState) {
         if (uiState is LoginUiState.Success) {
             onNavigateToHome()
@@ -94,7 +98,7 @@ private fun LoginContent (
     Column (
         modifier = Modifier
             .fillMaxSize()
-            .background(
+            .background (
                 Brush.verticalGradient(
                     colors = listOf(
                         Color(0xFF121212),
@@ -108,7 +112,7 @@ private fun LoginContent (
         verticalArrangement = Arrangement.Center
     ) {
         when (uiState) {
-            is LoginUiState.Loading -> CircularProgressIndicator()
+            is LoginUiState.Loading -> CookingLoadingScreen()
             is LoginUiState.Error -> {
                 LoginError (message = uiState.message, onRetry = onRetry)
             }
@@ -144,7 +148,6 @@ fun LoginError (
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Título del error
         Text (
             text = "¡Ups! Algo salió mal",
             style = MaterialTheme.typography.headlineSmall,
@@ -153,7 +156,6 @@ fun LoginError (
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // Mensaje detallado (el que viene del backend o Exception)
         Text (
             text = message,
             style = MaterialTheme.typography.bodyMedium,
@@ -163,7 +165,6 @@ fun LoginError (
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // Botón con estilo
         Button (
             onClick = onRetry,
             shape = RoundedCornerShape(12.dp),

@@ -1,10 +1,10 @@
 package com.dmm.recetario.data.service
 
+import com.dmm.recetario.data.repository.CategoryRepository
 import com.dmm.recetario.domain.model.Category
-import com.dmm.recetario.domain.repository.CategoryRepository
+import jakarta.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import javax.inject.Inject
 
 class CategoryService @Inject constructor (
     private val repository: CategoryRepository
@@ -12,21 +12,21 @@ class CategoryService @Inject constructor (
     suspend fun createCategory(data: Category): Category {
         return withContext(Dispatchers.IO) {
             val response = repository.createCategory(data)
-            response.body()!!
+            response
         }
     }
 
     suspend fun getAllCategories(): List<Category> {
         return withContext(Dispatchers.IO) {
             val response = repository.getAllCategories()
-            response.body()?.content ?: emptyList()
+            response
         }
     }
 
     suspend fun getCategory(id: String): Category {
         return withContext(Dispatchers.IO) {
             val response = repository.getCategory(id)
-            response.body()!!
+            response
         }
     }
 
@@ -36,7 +36,7 @@ class CategoryService @Inject constructor (
     ): Category {
         return withContext(Dispatchers.IO) {
             val response = repository.updateCategory(id, data)
-            response.body()!!
+            response
         }
     }
 

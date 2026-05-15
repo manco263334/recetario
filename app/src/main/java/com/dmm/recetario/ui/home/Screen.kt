@@ -18,7 +18,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -26,10 +25,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import com.dmm.recetario.core.utils.extension.isNotAnonymous
 import com.dmm.recetario.domain.model.Category
 import com.dmm.recetario.domain.model.User
 import com.dmm.recetario.ui.auth.login.LoginError
-import com.dmm.recetario.ui.components.DrawerContent
+import com.dmm.recetario.ui.components.CookingLoadingScreen
+import com.dmm.recetario.ui.components.drawer.DrawerContent
 import com.dmm.recetario.ui.components.Toolbar
 import com.dmm.recetario.ui.components.WellnessCard
 import com.dmm.recetario.ui.components.fab.FAB
@@ -37,21 +38,16 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun HomeScreen (
-    viewModel: HomeViewModel = hiltViewModel(),
     onCategoryClick: (Category) -> Unit,
     onSettingsClick: (User?) -> Unit,
     onLogOutSuccess: () -> Unit,
-    onCompleteForm: () -> Unit
+    onCompleteForm: () -> Unit,
+    user: User?,
+    viewModel: HomeViewModel = hiltViewModel(),
 ) {
     val state = viewModel.uiState
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
-
-    LaunchedEffect(state) {
-        if (state is HomeUiState.LoggedOutSuccess) {
-            onLogOutSuccess()
-        }
-    }
 
     when (state) {
         is HomeUiState.Success -> {
@@ -60,9 +56,9 @@ fun HomeScreen (
                 drawerContent = {
                     DrawerContent (
                         scaffoldState = drawerState,
-                        user = state.user,
+                        user = user,
                         onSettingsClick = onSettingsClick,
-                        onLogOutClick = viewModel::logout,
+                        onLogOutSuccess = onLogOutSuccess,
                         onHomeClick = { scope.launch { drawerState.close() } },
                     )
                 }
@@ -73,11 +69,11 @@ fun HomeScreen (
                             scaffoldState = drawerState,
                             modifier = Modifier,
                         ) {
-                            WelcomeHeader(state.user)
+                            WelcomeHeader(user)
                         }
                     },
                     floatingActionButton = {
-                        if (state.showFAB) {
+                        if (user.isNotAnonymous()) {
                             FAB(onCompleteForm = onCompleteForm)
                         }
                     }
@@ -91,11 +87,11 @@ fun HomeScreen (
             }
         }
         is HomeUiState.Error -> {
-            LoginError(message = state.message, onRetry = { viewModel.loadHomeData() })
+            LoginError(message = state.message, onRetry = viewModel::loadHomeData)
         }
         else -> {
             Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator()
+                CookingLoadingScreen()
             }
         }
     }
@@ -141,7 +137,7 @@ private fun WelcomeHeader(user: User?) {
     text += user?.name ?: "Invitado"
 
     user?.username?.also {
-        text += "@($it)"
+        text += " ($it)"
     }
 
     Text(text, fontWeight = FontWeight.Bold)

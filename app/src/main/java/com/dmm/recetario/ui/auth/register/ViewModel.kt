@@ -9,8 +9,8 @@ import com.dmm.recetario.data.local.TokenManager
 import com.dmm.recetario.data.service.AuthService
 import com.dmm.recetario.domain.repository.RegisterData
 import dagger.hilt.android.lifecycle.HiltViewModel
+import jakarta.inject.Inject
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 @HiltViewModel
 class RegisterViewModel @Inject constructor (

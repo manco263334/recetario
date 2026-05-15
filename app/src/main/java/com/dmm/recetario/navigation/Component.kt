@@ -1,22 +1,21 @@
 package com.dmm.recetario.navigation
 
-import android.util.Log
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
+import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
+import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import com.dmm.recetario.core.utils.extension.back
 import com.dmm.recetario.core.utils.extension.backTo
 import com.dmm.recetario.core.utils.extension.navigateTo
+import com.dmm.recetario.domain.model.User
 import com.dmm.recetario.ui.auth.login.LoginScreen
 import com.dmm.recetario.ui.auth.register.RegisterScreen
 import com.dmm.recetario.ui.home.HomeScreen
@@ -24,12 +23,17 @@ import com.dmm.recetario.ui.home.HomeScreen
 @Composable
 fun AppNavigation (
     backStack: NavBackStack<NavKey>,
+    user: User?,
     modifier: Modifier = Modifier,
 ) {
     NavDisplay (
         backStack = backStack,
         modifier = modifier,
         onBack = backStack::back,
+        entryDecorators = listOf (
+            rememberSaveableStateHolderNavEntryDecorator(),
+            rememberViewModelStoreNavEntryDecorator()
+        ),
         entryProvider = entryProvider {
             entry<Routes.Login> {
                 LoginScreen (
@@ -38,7 +42,6 @@ fun AppNavigation (
                         backStack.navigateTo(Routes.Home)
                     },
                     onNavigateToRegister = {
-                        backStack.clear()
                         backStack.navigateTo(Routes.Register)
                     }
                 )
@@ -65,16 +68,13 @@ fun AppNavigation (
                         backStack.navigateTo(Routes.Settings)
                     },
                     onLogOutSuccess = {
-                        Log.d("LOGOUT", "Cerrando sesión")
-                        Log.d("LOGOUT", "Backstack antes del clear: ${backStack.map { it }}")
                         backStack.clear()
-                        Log.d("LOGOUT", "Backstack después del clear: ${backStack.map { it }}")
                         backStack.navigateTo(Routes.Login)
-                        Log.d("LOGOUT", "Backstack después del navigate: ${backStack.map { it }}")
-                     },
+                    },
                     onCompleteForm = {
                         backStack.backTo(Routes.Home)
-                    }
+                    },
+                    user = user
                 )
             }
 
@@ -115,57 +115,3 @@ fun AppNavigation (
         }
     )
 }
-
-//@Composable
-//fun AppNavigation (
-//    navController: NavHostController,
-//    startDestination: Any
-//) {
-//    NavHost (
-//        navController = navController,
-//        startDestination = startDestination
-//    ) {
-//        composable<Login> {
-//            LoginScreen (
-//                onNavigateToHome = {
-//                    navController.navigate(Home) {
-//                        popUpTo(Login) { inclusive = true }
-//                    }
-//                },
-//                onNavigateToRegister = {
-//                    navController.navigate(Register) {
-//                        popUpTo(Login) { inclusive = true }
-//                    }
-//                }
-//            )
-//        }
-//
-//        composable<Register> {
-//            RegisterScreen (
-//                onNavigateToHome = {
-//                    navController.navigate(Home) {
-//                        popUpTo(Login) { inclusive = true }
-//                    }
-//                },
-//                onNavigateToLogin = {
-//                    navController.navigate(Login) {
-//                        popUpTo(Register) { inclusive = true }
-//                    }
-//                }
-//            )
-//        }
-//
-//        composable<Home> {
-//            HomeScreen(
-//                onCategoryClick = {},
-//                onSettingsClick = {},
-//                onLogOutClick = {
-//                    navController.navigate(Login) {
-//                        popUpTo(Home) { inclusive = true }
-//                    }
-//                },
-//                onCompleteForm = {}
-//            )
-//        }
-//    }
-//}

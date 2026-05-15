@@ -1,8 +1,8 @@
 package com.dmm.recetario.data.remote.retrofit
 
+import com.dmm.recetario.data.model.dto.RecipeDTO
 import com.dmm.recetario.domain.model.PageResponse
 import com.dmm.recetario.domain.model.Recipe
-import com.dmm.recetario.domain.repository.RecipeRepository
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
@@ -11,19 +11,19 @@ import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Path
 
-interface APIRecipeService: RecipeRepository {
+interface APIRecipeService {
     @POST("recipes")
-    override suspend fun createRecipe(@Body data: Recipe): Response<Recipe>
+    suspend fun createRecipe(@Body data: Recipe): Response<RecipeDTO>
 
     @GET("recipes")
-    override suspend fun getAllRecipes(): Response<PageResponse<Recipe>>
+    suspend fun getAllRecipes(): Response<PageResponse<RecipeDTO>>
 
     @GET("recipes/{id}")
-    override suspend fun getRecipe(@Path("id") id: String): Response<Recipe>
+    suspend fun getRecipe(@Path("id") id: String): Response<RecipeDTO>
 
     @PUT("recipes/{id}")
-    override suspend fun updateRecipe(@Path("id") id: String, @Body data: Recipe): Response<Recipe>
+    suspend fun updateRecipe(@Path("id") id: String, @Body data: Recipe): Response<RecipeDTO>
 
     @DELETE("recipes/{id}")
-    override suspend fun deleteRecipe(@Path("id") id: String): Response<Unit>
+    suspend fun deleteRecipe(@Path("id") id: String): Response<Unit>
 }

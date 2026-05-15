@@ -12,7 +12,7 @@ import jakarta.inject.Inject
 import kotlinx.coroutines.launch
 
 @HiltViewModel
-class FABViewModel @Inject constructor(
+class FABViewModel @Inject constructor (
     private val categoryService: CategoryService
 ): ViewModel() {
     var categories by mutableStateOf<List<Category>>(emptyList())

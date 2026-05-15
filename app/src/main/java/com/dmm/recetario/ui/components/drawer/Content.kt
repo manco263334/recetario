@@ -1,4 +1,4 @@
-package com.dmm.recetario.ui.components
+package com.dmm.recetario.ui.components.drawer
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -25,6 +25,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -33,19 +34,29 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.dmm.recetario.domain.model.User
 import kotlinx.coroutines.launch
 
 @Composable
 fun DrawerContent (
+    viewModel: DrawerViewModel = hiltViewModel(),
     scaffoldState: DrawerState,
     user: User?,
     onSettingsClick: (user: User?) -> Unit,
-    onLogOutClick: () -> Unit,
+    onLogOutSuccess: () -> Unit,
     onHomeClick: () -> Unit
 ) {
     val coroutineScope = rememberCoroutineScope()
+    val logOutSuccessful = viewModel.logOutSuccessful
+
+    LaunchedEffect (logOutSuccessful) {
+        if (logOutSuccessful == true) {
+            onLogOutSuccess()
+        }
+    }
+
     Column (
         modifier = Modifier
             .fillMaxSize()
@@ -134,18 +145,16 @@ fun DrawerContent (
             shape = RoundedCornerShape(16.dp)
         )
 
-        user?.let {
-            NavigationDrawerItem(
-                label = {
-                    Text("Cerrar sesión")
-                },
-                selected = false,
-                onClick = onLogOutClick,
-                icon = {
-                    Icon(Icons.AutoMirrored.Filled.ExitToApp, null)
-                },
-                shape = RoundedCornerShape(16.dp)
-            )
-        }
+        NavigationDrawerItem (
+            label = {
+                Text("Cerrar sesión")
+            },
+            selected = false,
+            onClick = viewModel::logout,
+            icon = {
+                Icon(Icons.AutoMirrored.Filled.ExitToApp, null)
+            },
+            shape = RoundedCornerShape(16.dp)
+        )
     }
 }
