@@ -4,19 +4,21 @@ import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.Upsert
 import com.dmm.recetario.data.local.database.entity.CategoryEntity
-import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface CategoryDAO {
     @Query("SELECT * FROM categories")
-    fun getCategories(): Flow<List<CategoryEntity>>
+    suspend fun getCategories(): List<CategoryEntity>
 
     @Query("SELECT * FROM categories WHERE id = :id")
-    fun getCategory(id: String): Flow<CategoryEntity?>
+    suspend fun getCategory(id: String): CategoryEntity?
 
     @Upsert
     suspend fun saveCategories(categories: List<CategoryEntity>)
 
     @Query("DELETE FROM categories")
-    fun clear()
+    suspend fun clear()
+
+    @Query("DELETE FROM categories WHERE id = :id")
+    suspend fun deleteCategory(id: String)
 }

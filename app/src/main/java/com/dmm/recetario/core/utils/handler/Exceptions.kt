@@ -1,0 +1,13 @@
+package com.dmm.recetario.core.utils.handler
+
+sealed class APIException(message: String) : RuntimeException(message) {
+    class BadRequestException(message: String) : APIException(message)
+    class UnauthorizedException(message: String) : APIException(message)
+    class ForbiddenException(message: String) : APIException(message)
+    class NotFoundException(message: String) : APIException(message)
+    class TooManyRequestsException(message: String) : APIException(message)
+
+    class ServerException(message: String) : APIException(message)
+
+    class UnknownException(message: String) : APIException(message)
+}

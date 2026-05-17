@@ -4,6 +4,9 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
+import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
+import androidx.compose.material3.adaptive.navigation3.ListDetailSceneStrategy
+import androidx.compose.material3.adaptive.navigation3.rememberListDetailSceneStrategy
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
@@ -11,6 +14,7 @@ import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
+import androidx.navigation3.scene.SinglePaneSceneStrategy
 import androidx.navigation3.ui.NavDisplay
 import com.dmm.recetario.core.utils.extension.back
 import com.dmm.recetario.core.utils.extension.backTo
@@ -18,8 +22,11 @@ import com.dmm.recetario.core.utils.extension.navigateTo
 import com.dmm.recetario.domain.model.User
 import com.dmm.recetario.ui.auth.login.LoginScreen
 import com.dmm.recetario.ui.auth.register.RegisterScreen
+import com.dmm.recetario.ui.category.CategoryScreen
 import com.dmm.recetario.ui.home.HomeScreen
+import com.dmm.recetario.ui.recipe.RecipeScreen
 
+@OptIn(ExperimentalMaterial3AdaptiveApi::class)
 @Composable
 fun AppNavigation (
     backStack: NavBackStack<NavKey>,
@@ -33,6 +40,10 @@ fun AppNavigation (
         entryDecorators = listOf (
             rememberSaveableStateHolderNavEntryDecorator(),
             rememberViewModelStoreNavEntryDecorator()
+        ),
+        sceneStrategies = listOf (
+            rememberListDetailSceneStrategy(),
+            SinglePaneSceneStrategy()
         ),
         entryProvider = entryProvider {
             entry<Routes.Login> {
@@ -59,7 +70,9 @@ fun AppNavigation (
                 )
             }
 
-            entry<Routes.Home> {
+            entry<Routes.Home> (
+                metadata = ListDetailSceneStrategy.listPane()
+            ) {
                 HomeScreen (
                     onCategoryClick = {
                         backStack.navigateTo(Routes.Category(it.id))
@@ -78,11 +91,52 @@ fun AppNavigation (
                 )
             }
 
-            entry<Routes.Category> {
-
+            entry<Routes.Category> (
+                metadata = ListDetailSceneStrategy.detailPane()
+            ) {
+                CategoryScreen (
+                    recipes = emptyList(),
+                    onRecipeClick = {
+                        backStack.navigateTo(Routes.Recipe(it.id))
+                    },
+                    onSettingsClick = {
+                        backStack.navigateTo(Routes.Settings)
+                    },
+                    onLogOutSuccess = {
+                        backStack.clear()
+                        backStack.navigateTo(Routes.Login)
+                    },
+                    onHomeClick = {
+                        backStack.backTo(Routes.Home)
+                    },
+                    onCompleteForm = {
+                        backStack.backTo(Routes.Category(it.id))
+                    },
+                    user = user,
+                )
             }
 
-            entry<Routes.Settings> {
+            entry<Routes.Recipe> {
+                RecipeScreen (
+                    recipe = null,
+                    onSettingsClick = {
+                        backStack.navigateTo(Routes.Settings)
+                    },
+                    onLogOutSuccess = {
+                        backStack.clear()
+                        backStack.navigateTo(Routes.Login)
+                    },
+                    onHomeClick = {
+                        backStack.backTo(Routes.Home)
+                    },
+                    onCompleteForm = {
+                        backStack.backTo(Routes.Recipe(it.id))
+                    },
+                    user = user,
+                )
+            }
+
+            entry <Routes.Settings> {
 
             }
         },

@@ -7,16 +7,15 @@ import androidx.room.Upsert
 import com.dmm.recetario.data.local.database.entity.RecipeCategoryCrossRef
 import com.dmm.recetario.data.local.database.entity.RecipeEntity
 import com.dmm.recetario.data.local.database.entity.RecipeWithDetails
-import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface RecipeDAO {
     @Transaction
     @Query("SELECT * FROM recipes")
-    fun getRecipes(): Flow<List<RecipeWithDetails>>
+    suspend fun getRecipes(): List<RecipeEntity>
 
     @Query("SELECT * FROM recipes WHERE id = :id")
-    fun getRecipe(id: String): Flow<RecipeWithDetails?>
+    suspend fun getRecipe(id: String): RecipeEntity?
 
     @Upsert
     suspend fun saveRecipes(recipes: List<RecipeEntity>)
@@ -25,5 +24,8 @@ interface RecipeDAO {
     suspend fun insertReferences(refs: List<RecipeCategoryCrossRef>)
 
     @Query("DELETE FROM recipes")
-    fun clear()
+    suspend fun clear()
+
+    @Query("DELETE FROM recipes WHERE id = :id")
+    suspend fun deleteRecipe(id: String)
 }

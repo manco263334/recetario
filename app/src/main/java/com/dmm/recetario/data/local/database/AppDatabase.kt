@@ -1,7 +1,6 @@
 package com.dmm.recetario.data.local.database
 
 import androidx.room.Database
-import androidx.room.InvalidationTracker
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.dmm.recetario.data.local.database.dao.CategoryDAO

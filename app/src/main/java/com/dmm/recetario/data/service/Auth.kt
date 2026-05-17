@@ -1,5 +1,6 @@
 package com.dmm.recetario.data.service
 
+import com.dmm.recetario.core.utils.handler.handleApiCall
 import com.dmm.recetario.data.remote.retrofit.APIAuthService
 import com.dmm.recetario.domain.repository.LoginData
 import com.dmm.recetario.domain.repository.LoginResponse
@@ -14,29 +15,28 @@ class AuthService @Inject constructor (
 ) {
     suspend fun login(data: LoginData): LoginResponse {
         return withContext(Dispatchers.IO) {
-            val response = repository.login(data)
-            if(response.isSuccessful) response.body()!!
-            else throw Exception("Credenciales inválidas")
+            val response = handleApiCall { repository.login(data) }
+            response ?: throw Exception("Credenciales Inválidas")
         }
     }
 
     suspend fun register(data: RegisterData): LoginResponse {
         return withContext(Dispatchers.IO) {
-            val response = repository.register(data)
-            response.body()!!
+            val response = handleApiCall { repository.register(data) }
+            response!!
         }
     }
 
     suspend fun logout() {
         return withContext(Dispatchers.IO) {
-            repository.logout()
+            handleApiCall { repository.logout() }
         }
     }
 
     suspend fun me(): MeResponse {
         return withContext(Dispatchers.IO) {
-            val response = repository.me()
-            response.body()!!
+            val response = handleApiCall { repository.me() }
+            response!!
         }
     }
 }

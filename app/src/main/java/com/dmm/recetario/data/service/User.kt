@@ -1,25 +1,34 @@
 package com.dmm.recetario.data.service
 
-import com.dmm.recetario.data.repository.UserRepository
+import com.dmm.recetario.core.utils.extension.isNotNull
 import com.dmm.recetario.domain.model.User
+import com.dmm.recetario.domain.use_cases.user.DeleteUserUseCase
+import com.dmm.recetario.domain.use_cases.user.GetUserUseCase
+import com.dmm.recetario.domain.use_cases.user.GetUsersUseCase
+import com.dmm.recetario.domain.use_cases.user.UpdateUserUseCase
 import jakarta.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 class UserService @Inject constructor (
-    private val repository: UserRepository
+    private val getUsersUseCase: GetUsersUseCase,
+    private val getUserUseCase: GetUserUseCase,
+    private val updateUserUseCase: UpdateUserUseCase,
+    private val deleteUserUseCase: DeleteUserUseCase
 ) {
     suspend fun getAllUsers(): List<User> {
         return withContext(Dispatchers.IO) {
-            val response = repository.getAllUsers()
-            response
+            getUsersUseCase(this)
         }
     }
 
     suspend fun getUser(id: String): User {
         return withContext(Dispatchers.IO) {
-            val response = repository.getUser(id)
-            response
+            val user = getUserUseCase(id, this)
+
+            assert(user.isNotNull())
+
+            user!!
         }
     }
 
@@ -28,14 +37,17 @@ class UserService @Inject constructor (
         data: User
     ): User {
         return withContext(Dispatchers.IO) {
-            val response = repository.updateUser(id, data)
-            response
+            val user = updateUserUseCase(id, data, this)
+
+            assert(user.isNotNull())
+
+            user!!
         }
     }
 
     suspend fun deleteUser(id: String) {
         return withContext(Dispatchers.IO) {
-            repository.deleteUser(id)
+            assert(deleteUserUseCase(id, this))
         }
     }
 }
