@@ -11,7 +11,6 @@ data class Recipe (
     val preparationTimeInMinutes: Int,
     val stars: Int,
     val icon: String?,
-
     val creator: String?,
     var categories: List<String>?
 )

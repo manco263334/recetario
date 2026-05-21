@@ -1,23 +1,30 @@
 package com.dmm.recetario.data.service
 
+import android.util.Log
 import com.dmm.recetario.core.utils.extension.isNotNull
+import com.dmm.recetario.core.utils.handler.APIException
+import com.dmm.recetario.core.utils.mapper.toDomain
+import com.dmm.recetario.core.utils.mapper.toEntity
+import com.dmm.recetario.data.local.database.dao.RecipeDAO
 import com.dmm.recetario.data.repository.RecipeRepository
 import com.dmm.recetario.domain.model.Recipe
 import com.dmm.recetario.domain.use_cases.recipe.CreateRecipeUseCase
 import com.dmm.recetario.domain.use_cases.recipe.DeleteRecipeUseCase
 import com.dmm.recetario.domain.use_cases.recipe.GetRecipeUseCase
-import com.dmm.recetario.domain.use_cases.recipe.GetRecipesUseCase
 import com.dmm.recetario.domain.use_cases.recipe.UpdateRecipeUseCase
 import jakarta.inject.Inject
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 
 class RecipeService @Inject constructor (
     private val createRecipeUseCase: CreateRecipeUseCase,
-    private val getRecipesUseCase: GetRecipesUseCase,
     private val getRecipeUseCase: GetRecipeUseCase,
     private val updateRecipeUseCase: UpdateRecipeUseCase,
-    private val deleteRecipeUseCase: DeleteRecipeUseCase
+    private val deleteRecipeUseCase: DeleteRecipeUseCase,
+    private val repository: RecipeRepository,
+    private val dao: RecipeDAO
 ) {
     suspend fun createRecipe(data: Recipe): Recipe {
         return withContext(Dispatchers.IO) {
@@ -29,9 +36,20 @@ class RecipeService @Inject constructor (
         }
     }
 
-    suspend fun getAllRecipes(): List<Recipe> {
-        return withContext(Dispatchers.IO) {
-            getRecipesUseCase(this)
+    fun getAllRecipes(): Flow<List<Recipe>> {
+        return dao.getRecipes().map { recipes ->
+            recipes.map { recipe ->
+                recipe.toDomain()
+            }
+        }
+    }
+
+    suspend fun syncRecipes() {
+        try {
+            val recipes = repository.getAllRecipes()
+            dao.saveRecipes(recipes.map { it.toEntity() })
+        } catch (e: APIException) {
+            Log.e("RecipeService", "Error syncing recipes: ${e.message}", e)
         }
     }
 

@@ -18,7 +18,8 @@ import com.dmm.recetario.data.local.database.entity.UserEntity
         RecipeEntity::class,
         RecipeCategoryCrossRef::class
     ],
-    version = 1
+    version = 1,
+    exportSchema = false
 )
 @TypeConverters(Converters::class)
 abstract class AppDatabase: RoomDatabase() {

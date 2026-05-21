@@ -1,6 +1,7 @@
 package com.dmm.recetario.data.service
 
 import com.dmm.recetario.core.utils.handler.handleApiCall
+import com.dmm.recetario.data.local.database.dao.UserDAO
 import com.dmm.recetario.data.remote.retrofit.APIAuthService
 import com.dmm.recetario.domain.repository.LoginData
 import com.dmm.recetario.domain.repository.LoginResponse

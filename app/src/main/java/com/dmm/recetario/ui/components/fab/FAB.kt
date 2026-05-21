@@ -23,6 +23,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.dmm.recetario.ui.components.form.category.CategoryForm
 import com.dmm.recetario.ui.components.form.recipe.RecipeForm
 
@@ -31,7 +32,7 @@ fun FAB (
     viewModel: FABViewModel = hiltViewModel(),
     onCompleteForm: () -> Unit
 ) {
-    val categories = viewModel.categories
+    val categories by viewModel.categories.collectAsStateWithLifecycle()
     var showMenu by remember { mutableStateOf(false) }
     var selectedOption by remember { mutableStateOf<String?>(null) }
 

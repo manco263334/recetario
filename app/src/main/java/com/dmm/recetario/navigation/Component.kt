@@ -13,6 +13,7 @@ import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDe
 import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
+import androidx.navigation3.runtime.metadata
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.scene.SinglePaneSceneStrategy
 import androidx.navigation3.ui.NavDisplay
@@ -42,8 +43,7 @@ fun AppNavigation (
             rememberViewModelStoreNavEntryDecorator()
         ),
         sceneStrategies = listOf (
-            rememberListDetailSceneStrategy(),
-            SinglePaneSceneStrategy()
+            rememberListDetailSceneStrategy()
         ),
         entryProvider = entryProvider {
             entry<Routes.Login> {
@@ -95,7 +95,8 @@ fun AppNavigation (
                 metadata = ListDetailSceneStrategy.detailPane()
             ) {
                 CategoryScreen (
-                    recipes = emptyList(),
+                    categoryId = it.id,
+                    user = user,
                     onRecipeClick = {
                         backStack.navigateTo(Routes.Recipe(it.id))
                     },
@@ -112,13 +113,15 @@ fun AppNavigation (
                     onCompleteForm = {
                         backStack.backTo(Routes.Category(it.id))
                     },
-                    user = user,
                 )
             }
 
-            entry<Routes.Recipe> {
+            entry<Routes.Recipe> (
+                metadata = ListDetailSceneStrategy.extraPane()
+            ) {
                 RecipeScreen (
-                    recipe = null,
+                    recipeId = it.id,
+                    user = user,
                     onSettingsClick = {
                         backStack.navigateTo(Routes.Settings)
                     },
@@ -131,8 +134,7 @@ fun AppNavigation (
                     },
                     onCompleteForm = {
                         backStack.backTo(Routes.Recipe(it.id))
-                    },
-                    user = user,
+                    }
                 )
             }
 

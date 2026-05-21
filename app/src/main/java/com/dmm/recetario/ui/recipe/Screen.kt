@@ -19,29 +19,38 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.dmm.recetario.core.utils.extension.isNotAnonymous
 import com.dmm.recetario.domain.model.Recipe
 import com.dmm.recetario.domain.model.User
 import com.dmm.recetario.ui.components.Toolbar
+import com.dmm.recetario.ui.components.WelcomeHeader
 import com.dmm.recetario.ui.components.drawer.DrawerContent
 import com.dmm.recetario.ui.components.fab.FAB
 
 @Composable
 fun RecipeScreen (
-    recipe: Recipe?,
+    recipeId: String,
+    user: User?,
     onSettingsClick: (user: User?) -> Unit,
     onLogOutSuccess: () -> Unit,
     onHomeClick: () -> Unit,
     onCompleteForm: () -> Unit,
-    user: User?,
     viewModel: RecipeViewModel = hiltViewModel(),
 ) {
+    LaunchedEffect(recipeId) {
+        viewModel.loadRecipe(recipeId)
+    }
+
     val drawerState = rememberDrawerState(DrawerValue.Closed)
+    val recipe by viewModel.recipe.collectAsStateWithLifecycle()
 
     ModalNavigationDrawer (
         drawerState = drawerState,
@@ -60,7 +69,9 @@ fun RecipeScreen (
             topBar = {
                 Toolbar (
                     scaffoldState = drawerState
-                ) {}
+                ) {
+                    WelcomeHeader(user)
+                }
             },
             content = { paddingValues ->
                 RecipeContent (

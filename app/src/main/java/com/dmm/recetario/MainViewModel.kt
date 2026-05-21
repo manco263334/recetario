@@ -7,6 +7,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dmm.recetario.data.local.TokenManager
 import com.dmm.recetario.data.local.UserManager
+import com.dmm.recetario.data.service.CategoryService
+import com.dmm.recetario.data.service.RecipeService
 import com.dmm.recetario.domain.model.AnonymousUser
 import com.dmm.recetario.domain.model.User
 import com.dmm.recetario.navigation.Routes
@@ -18,7 +20,9 @@ import kotlinx.coroutines.launch
 @HiltViewModel
 class MainViewModel @Inject constructor (
     private val tokenManager: TokenManager,
-    private val userManager: UserManager
+    private val userManager: UserManager,
+    private val recipeService: RecipeService,
+    private val categoryService: CategoryService
 ): ViewModel() {
     var startDestination by mutableStateOf<Routes?>(null)
         private set
@@ -27,8 +31,9 @@ class MainViewModel @Inject constructor (
         private set
 
     init {
-        checkAuthStatus()
         initUser()
+        checkAuthStatus()
+        sync()
     }
 
     private fun checkAuthStatus() {
@@ -41,6 +46,13 @@ class MainViewModel @Inject constructor (
     private fun initUser() {
         viewModelScope.launch {
             user = userManager.getUser() ?: AnonymousUser()
+        }
+    }
+
+    private fun sync () {
+        viewModelScope.launch {
+            recipeService.syncRecipes()
+            categoryService.syncCategories()
         }
     }
 }

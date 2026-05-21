@@ -1,5 +1,6 @@
 package com.dmm.recetario.data.local.database.entity
 
+import androidx.room.ColumnInfo
 import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.Junction
@@ -20,6 +21,7 @@ data class RecipeEntity (
     val stars: Int,
     val icon: String?,
 
+    @ColumnInfo(name = "user_id")
     val userId: String
 )
 
@@ -28,8 +30,11 @@ data class RecipeEntity (
     primaryKeys = ["recipe_id", "category_id"]
 )
 data class RecipeCategoryCrossRef (
-    val recipe_id: String,
-    val category_id: String
+    @ColumnInfo(name = "recipe_id")
+    val recipeId: String,
+
+    @ColumnInfo(name = "category_id")
+    val categoryId: String
 )
 
 data class RecipeWithDetails (

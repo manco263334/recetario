@@ -61,6 +61,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.dmm.recetario.ui.components.CookingLoadingScreen
+import com.dmm.recetario.ui.components.ErrorScreen
 
 @Composable
 fun LoginScreen (
@@ -114,7 +115,10 @@ private fun LoginContent (
         when (uiState) {
             is LoginUiState.Loading -> CookingLoadingScreen()
             is LoginUiState.Error -> {
-                LoginError (message = uiState.message, onRetry = onRetry)
+                ErrorScreen (
+                    message = uiState.message,
+                    onRetry = onRetry
+                )
             }
             else -> {
                 LoginForm (
@@ -123,63 +127,6 @@ private fun LoginContent (
                     onNavigateToRegister = onNavigateToRegister
                 )
             }
-        }
-    }
-}
-
-@Composable
-fun LoginError (
-    message: String,
-    onRetry: () -> Unit
-) {
-    Column (
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(24.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Icon (
-            imageVector = Icons.Default.Warning,
-            contentDescription = null,
-            modifier = Modifier.size(64.dp),
-            tint = MaterialTheme.colorScheme.error
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Text (
-            text = "¡Ups! Algo salió mal",
-            style = MaterialTheme.typography.headlineSmall,
-            fontWeight = FontWeight.Bold
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        Text (
-            text = message,
-            style = MaterialTheme.typography.bodyMedium,
-            textAlign = TextAlign.Center,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        Button (
-            onClick = onRetry,
-            shape = RoundedCornerShape(12.dp),
-            colors = ButtonDefaults.buttonColors (
-                containerColor = MaterialTheme.colorScheme.error
-            )
-        ) {
-            Icon (
-                Icons.Default.Refresh,
-                contentDescription = null
-            )
-
-            Spacer(Modifier.width(8.dp))
-
-            Text("Reintentar")
         }
     }
 }
@@ -371,14 +318,5 @@ private fun LoginScreenPreview() {
         onNavigateToHome = {},
         onNavigateToRegister = {},
         onLoginAsGuest = {}
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun LoginErrorPreview() {
-    LoginError (
-        message = "Algo salió mal",
-        onRetry = {}
     )
 }

@@ -7,12 +7,13 @@ import androidx.room.Upsert
 import com.dmm.recetario.data.local.database.entity.RecipeCategoryCrossRef
 import com.dmm.recetario.data.local.database.entity.RecipeEntity
 import com.dmm.recetario.data.local.database.entity.RecipeWithDetails
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface RecipeDAO {
     @Transaction
     @Query("SELECT * FROM recipes")
-    suspend fun getRecipes(): List<RecipeEntity>
+    fun getRecipes(): Flow<List<RecipeEntity>>
 
     @Query("SELECT * FROM recipes WHERE id = :id")
     suspend fun getRecipe(id: String): RecipeEntity?

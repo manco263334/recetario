@@ -16,6 +16,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlin.collections.set
 
 @Composable
@@ -24,7 +25,7 @@ fun RecipeForm (
     onDismiss: () -> Unit,
     onCompleteForm: () -> Unit
 ) {
-    val categories = viewModel.categories
+    val categories by viewModel.categories.collectAsStateWithLifecycle()
     var stepIndex by rememberSaveable { mutableIntStateOf(0) }
 
     var name by rememberSaveable { mutableStateOf("") }
