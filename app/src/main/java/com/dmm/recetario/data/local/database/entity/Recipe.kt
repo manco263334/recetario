@@ -36,24 +36,3 @@ data class RecipeCategoryCrossRef (
     @ColumnInfo(name = "category_id")
     val categoryId: String
 )
-
-data class RecipeWithDetails (
-    @Embedded val recipe: RecipeEntity,
-
-    @Relation (
-        parentColumn = "userId",
-        entityColumn = "id"
-    )
-    val creator: UserEntity,
-
-    @Relation (
-        parentColumn = "id",
-        entityColumn = "id",
-        associateBy = Junction (
-            RecipeCategoryCrossRef::class,
-            parentColumn = "recipe_id",
-            entityColumn = "category_id"
-        )
-    )
-    val categories: List<CategoryEntity>
-)

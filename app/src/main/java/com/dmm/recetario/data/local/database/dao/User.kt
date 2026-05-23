@@ -5,6 +5,7 @@ import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Upsert
 import com.dmm.recetario.data.local.database.entity.RecipeEntity
+import com.dmm.recetario.data.local.database.entity.TokenUserRef
 import com.dmm.recetario.data.local.database.entity.UserEntity
 import kotlinx.coroutines.flow.Flow
 
@@ -14,10 +15,29 @@ interface UserDAO {
     fun getUsers(): Flow<List<UserEntity>>
 
     @Query("SELECT * FROM users WHERE id = :id")
-    suspend fun getUser(id: String): UserEntity?
+    fun getUser(id: String): Flow<UserEntity?>
 
     @Query("SELECT * FROM users WHERE email = :email")
-    suspend fun getUserByEmail(email: String): UserEntity?
+    fun getUserByEmail(email: String): Flow<UserEntity?>
+
+    @Query("SELECT * FROM users WHERE username = :username")
+    fun getUserByUsername(username: String): Flow<UserEntity?>
+
+    @Query ("""
+        SELECT u.* FROM tokens_users
+        INNER JOIN users u ON u.email = tokens_users.user_email
+        WHERE token = :token
+    """)
+    fun getUserByToken(token: String): Flow<UserEntity?>
+
+    @Upsert
+    fun insertReferences(refs: List<TokenUserRef>)
+
+    @Query("DELETE FROM tokens_users WHERE token = :token")
+    suspend fun deleteReference(token: String)
+
+    @Query("DELETE FROM tokens_users")
+    suspend fun clearReferences()
 
     @Upsert
     suspend fun saveUsers(users: List<UserEntity>)
@@ -29,7 +49,7 @@ interface UserDAO {
     suspend fun deleteUser(id: String)
 
     @Transaction
-    @Query("""
+    @Query ("""
             SELECT * FROM recipes
             WHERE user_id = :userId
             """)

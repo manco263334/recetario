@@ -1,6 +1,5 @@
 package com.dmm.recetario.ui.category
 
-
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dmm.recetario.data.service.CategoryService
@@ -48,10 +47,17 @@ class CategoryViewModel @Inject constructor (
         _selectedCategoryId.value = categoryId
     }
 
-    fun sync() {
+    fun sync (
+        page: Int = 0,
+        size: Int = 10
+    ) {
         viewModelScope.launch {
-            recipeService.syncRecipes()
-            categoryService.syncCategories()
+            recipeService.syncRecipes (
+                page = page,
+                size = size,
+                withCategories = true
+            )
+            categoryService.syncCategories(withRecipes = true)
         }
     }
 }

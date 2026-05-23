@@ -9,7 +9,6 @@ import com.dmm.recetario.data.local.database.dao.UserDAO
 import com.dmm.recetario.data.repository.UserRepository
 import com.dmm.recetario.domain.model.User
 import com.dmm.recetario.domain.use_cases.user.DeleteUserUseCase
-import com.dmm.recetario.domain.use_cases.user.GetUserUseCase
 import com.dmm.recetario.domain.use_cases.user.UpdateUserUseCase
 import jakarta.inject.Inject
 import kotlinx.coroutines.Dispatchers
@@ -18,40 +17,51 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 
 class UserService @Inject constructor (
-    private val getUserUseCase: GetUserUseCase,
     private val updateUserUseCase: UpdateUserUseCase,
     private val deleteUserUseCase: DeleteUserUseCase,
-    private val userDAO: UserDAO,
+    private val dao: UserDAO,
     private val userRepository: UserRepository
 ) {
     fun getAllUsers(): Flow<List<User>> {
-        return userDAO.getUsers().map {
+        return dao.getUsers().map {
             it.map { entity ->
                 entity.toDomain()
             }
         }
     }
 
-    suspend fun syncUsers() {
+    suspend fun syncUsers (
+        page: Int = 0,
+        size: Int = 10,
+        withRecipes: Boolean? = null
+    ) {
         try {
-            val users = userRepository.getAllUsers()
-            userDAO.saveUsers(users.map { it.toEntity() })
+            val users = userRepository.getAllUsers (
+                page = page,
+                size = size,
+                withRecipes = withRecipes
+            )
+            dao.saveUsers(users.map { it.toEntity() })
         } catch (e: APIException) {
             Log.e("UserService", "Error syncing users: ${e.message}", e)
         }
     }
 
-    fun getRecipes() {
-
+    fun getUserById(id: String): Flow<User?> {
+        return dao.getUser(id).map { user ->
+            user?.toDomain()
+        }
     }
 
-    suspend fun getUser(id: String): User {
-        return withContext(Dispatchers.IO) {
-            val user = getUserUseCase(id, this)
+    fun getUserByEmail(email: String): Flow<User?> {
+        return dao.getUserByEmail(email).map { user ->
+            user?.toDomain()
+        }
+    }
 
-            assert(user.isNotNull())
-
-            user!!
+    fun getUserByUsername(username: String): Flow<User?> {
+        return dao.getUserByUsername(username).map { user ->
+            user?.toDomain()
         }
     }
 

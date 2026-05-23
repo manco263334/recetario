@@ -6,11 +6,11 @@ import com.dmm.recetario.core.utils.handler.APIException
 import com.dmm.recetario.core.utils.mapper.toDomain
 import com.dmm.recetario.core.utils.mapper.toEntity
 import com.dmm.recetario.data.local.database.dao.RecipeDAO
+import com.dmm.recetario.data.local.database.entity.RecipeCategoryCrossRef
 import com.dmm.recetario.data.repository.RecipeRepository
 import com.dmm.recetario.domain.model.Recipe
 import com.dmm.recetario.domain.use_cases.recipe.CreateRecipeUseCase
 import com.dmm.recetario.domain.use_cases.recipe.DeleteRecipeUseCase
-import com.dmm.recetario.domain.use_cases.recipe.GetRecipeUseCase
 import com.dmm.recetario.domain.use_cases.recipe.UpdateRecipeUseCase
 import jakarta.inject.Inject
 import kotlinx.coroutines.Dispatchers
@@ -20,7 +20,6 @@ import kotlinx.coroutines.withContext
 
 class RecipeService @Inject constructor (
     private val createRecipeUseCase: CreateRecipeUseCase,
-    private val getRecipeUseCase: GetRecipeUseCase,
     private val updateRecipeUseCase: UpdateRecipeUseCase,
     private val deleteRecipeUseCase: DeleteRecipeUseCase,
     private val repository: RecipeRepository,
@@ -44,22 +43,37 @@ class RecipeService @Inject constructor (
         }
     }
 
-    suspend fun syncRecipes() {
+    suspend fun syncRecipes (
+        page: Int = 0,
+        size: Int = 10,
+        withCategories: Boolean? = null,
+        withCreator: Boolean? = null
+    ) {
         try {
-            val recipes = repository.getAllRecipes()
+            val recipes = repository.getAllRecipes (
+                page = page,
+                size = size,
+                withCategories = withCategories,
+                withCreator = withCreator
+            )
+
             dao.saveRecipes(recipes.map { it.toEntity() })
+
+            if (withCategories == true) {
+                recipes.forEach { recipe ->
+                    dao.insertReferences(recipe.categories?.map { categoryId ->
+                        RecipeCategoryCrossRef(recipe.id, categoryId)
+                    } ?: emptyList())
+                }
+            }
         } catch (e: APIException) {
             Log.e("RecipeService", "Error syncing recipes: ${e.message}", e)
         }
     }
 
-    suspend fun getRecipe(id: String): Recipe {
-        return withContext(Dispatchers.IO) {
-            val recipe = getRecipeUseCase(id, this)
-
-            assert(recipe.isNotNull())
-
-            recipe!!
+    fun getRecipe(id: String): Flow<Recipe?> {
+        return dao.getRecipe(id).map { recipe ->
+            recipe?.toDomain()
         }
     }
 

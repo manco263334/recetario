@@ -5,27 +5,44 @@ import com.dmm.recetario.core.utils.handler.handleApiCall
 import com.dmm.recetario.core.utils.mapper.toDomain
 import com.dmm.recetario.data.remote.retrofit.APIUserService
 import com.dmm.recetario.domain.model.User
-import com.dmm.recetario.domain.repository.IUserRepository
 import jakarta.inject.Inject
 
 class UserRepository @Inject constructor (
     private val apiUserService: APIUserService
-): IUserRepository {
-    override suspend fun getAllUsers(): List<User> {
-        val users = handleApiCall { apiUserService.getAllUsers() }
+){
+    suspend fun getAllUsers (
+        page: Int = 0,
+        size: Int = 10,
+        withRecipes: Boolean? = null
+    ): List<User> {
+        val users = handleApiCall {
+            apiUserService.getAllUsers (
+                page = page,
+                size = size,
+                withRecipes = withRecipes
+            )
+        }
 
         return users?.content?.map { it.toDomain() } ?: emptyList()
     }
 
-    override suspend fun getUser(id: String): User {
-        val user = handleApiCall { apiUserService.getUser(id) }
+    suspend fun getUser (
+        id: String,
+        withRecipes: Boolean? = null
+    ): User {
+        val user = handleApiCall {
+            apiUserService.getUser (
+                id = id,
+                withRecipes = withRecipes
+            )
+        }
 
         assert(user.isNotNull())
 
         return user!!.toDomain()
     }
 
-    override suspend fun updateUser (
+    suspend fun updateUser (
         id: String,
         data: User
     ): User {
@@ -36,7 +53,7 @@ class UserRepository @Inject constructor (
         return user!!.toDomain()
     }
 
-    override suspend fun deleteUser(id: String) {
+    suspend fun deleteUser(id: String) {
         handleApiCall { apiUserService.deleteUser(id) }
     }
 }

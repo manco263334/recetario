@@ -26,7 +26,7 @@ class RecipeViewModel @Inject constructor (
             if (recipeId == null) {
                 flowOf(null)
             } else {
-                flowOf(recipeService.getRecipe(recipeId))
+                recipeService.getRecipe(recipeId)
             }
         }
         .stateIn (

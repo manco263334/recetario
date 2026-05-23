@@ -6,6 +6,8 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dmm.recetario.data.local.TokenManager
+import com.dmm.recetario.data.local.database.dao.UserDAO
+import com.dmm.recetario.data.local.database.entity.TokenUserRef
 import com.dmm.recetario.data.service.AuthService
 import com.dmm.recetario.domain.repository.LoginData
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -15,7 +17,8 @@ import kotlinx.coroutines.launch
 @HiltViewModel
 class LoginViewModel @Inject constructor (
     private val service: AuthService,
-    private val tokenManager: TokenManager
+    private val tokenManager: TokenManager,
+    private val dao: UserDAO
 ): ViewModel() {
     var uiState by mutableStateOf<LoginUiState>(LoginUiState.Idle)
         private set
@@ -32,7 +35,8 @@ class LoginViewModel @Inject constructor (
                 val response = service.login(data)
                 val token = response.token
 
-                tokenManager.saveToken(token)
+                saveTokenToPreferences(token)
+                saveTokenToDatabase(token, email)
                 uiState = LoginUiState.Success(token)
             } catch (e: Exception) {
                 uiState = LoginUiState.Error("Error: ${e.message}")
@@ -40,15 +44,23 @@ class LoginViewModel @Inject constructor (
         }
     }
 
-    fun loginAsGuest () {
+    private suspend fun saveTokenToPreferences(token: String) {
+        tokenManager.saveToken(token)
+    }
+
+    private fun saveTokenToDatabase(token: String, email: String) {
+        dao.insertReferences(listOf(TokenUserRef(token, email)))
+    }
+
+    fun loginAsGuest() {
         viewModelScope.launch {
             val token = ""
-            tokenManager.saveToken(token)
+            saveTokenToPreferences(token)
             uiState = LoginUiState.Success(token)
         }
     }
 
-    fun resetToIdle () {
+    fun resetToIdle() {
         uiState = LoginUiState.Idle
     }
 }

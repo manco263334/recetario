@@ -5,6 +5,7 @@ import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Upsert
 import com.dmm.recetario.data.local.database.entity.CategoryEntity
+import com.dmm.recetario.data.local.database.entity.RecipeCategoryCrossRef
 import com.dmm.recetario.data.local.database.entity.RecipeEntity
 import kotlinx.coroutines.flow.Flow
 
@@ -14,10 +15,13 @@ interface CategoryDAO {
     fun getCategories(): Flow<List<CategoryEntity>>
 
     @Query("SELECT * FROM categories WHERE id = :id")
-    suspend fun getCategory(id: String): CategoryEntity?
+    fun getCategory(id: String): Flow<CategoryEntity?>
 
     @Upsert
     suspend fun saveCategories(categories: List<CategoryEntity>)
+
+    @Upsert
+    suspend fun insertReferences(refs: List<RecipeCategoryCrossRef>)
 
     @Query("DELETE FROM categories")
     suspend fun clear()
@@ -26,7 +30,7 @@ interface CategoryDAO {
     suspend fun deleteCategory(id: String)
 
     @Transaction
-    @Query("""
+    @Query ("""
             SELECT r.* FROM categories_recipes 
             INNER JOIN recipes as r ON r.id = recipe_id
             WHERE category_id = :categoryId

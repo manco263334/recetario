@@ -25,9 +25,16 @@ class HomeViewModel @Inject constructor (
         sync()
     }
 
-    fun sync() {
+    fun sync (
+        page: Int = 0,
+        size: Int = 10
+    ) {
         viewModelScope.launch {
-            categoryService.syncCategories()
+            categoryService.syncCategories (
+                page = page,
+                size = size,
+                withRecipes = true
+            )
         }
     }
 }

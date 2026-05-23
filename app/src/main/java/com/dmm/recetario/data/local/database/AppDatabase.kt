@@ -9,6 +9,7 @@ import com.dmm.recetario.data.local.database.dao.UserDAO
 import com.dmm.recetario.data.local.database.entity.CategoryEntity
 import com.dmm.recetario.data.local.database.entity.RecipeCategoryCrossRef
 import com.dmm.recetario.data.local.database.entity.RecipeEntity
+import com.dmm.recetario.data.local.database.entity.TokenUserRef
 import com.dmm.recetario.data.local.database.entity.UserEntity
 
 @Database (
@@ -16,9 +17,10 @@ import com.dmm.recetario.data.local.database.entity.UserEntity
         UserEntity::class,
         CategoryEntity::class,
         RecipeEntity::class,
-        RecipeCategoryCrossRef::class
+        RecipeCategoryCrossRef::class,
+        TokenUserRef::class
     ],
-    version = 1,
+    version = 2,
     exportSchema = false
 )
 @TypeConverters(Converters::class)

@@ -49,10 +49,10 @@ class MainViewModel @Inject constructor (
         }
     }
 
-    private fun sync () {
+    private fun sync() {
         viewModelScope.launch {
-            recipeService.syncRecipes()
-            categoryService.syncCategories()
+            recipeService.syncRecipes(withCategories = true)
+            categoryService.syncCategories(withRecipes = true)
         }
     }
 }

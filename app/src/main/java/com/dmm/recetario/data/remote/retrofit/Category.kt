@@ -10,20 +10,35 @@ import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Path
+import retrofit2.http.Query
 
 interface APICategoryService {
     @POST("categories")
-    suspend fun createCategory(@Body data: Category): Response<CategoryDTO>
+    suspend fun createCategory (
+        @Body data: Category
+    ): Response<CategoryDTO>
 
     @GET("categories")
-    suspend fun getAllCategories(): Response<PageResponse<CategoryDTO>>
+    suspend fun getAllCategories (
+        @Query("page") page: Int = 0,
+        @Query("size") size: Int = 10,
+        @Query("withRecipes") withRecipes: Boolean? = null
+    ): Response<PageResponse<CategoryDTO>>
 
     @GET("categories/{id}")
-    suspend fun getCategory(@Path("id") id: String): Response<CategoryDTO>
+    suspend fun getCategory (
+        @Path("id") id: String,
+        @Query("withRecipes") withRecipes: Boolean? = null
+    ): Response<CategoryDTO>
 
     @PUT("categories/{id}")
-    suspend fun updateCategory(@Path("id") id: String, @Body data: Category): Response<CategoryDTO>
+    suspend fun updateCategory (
+        @Path("id") id: String,
+        @Body data: Category
+    ): Response<CategoryDTO>
 
     @DELETE("categories/{id}")
-    suspend fun deleteCategory(@Path("id") id: String): Response<Unit>
+    suspend fun deleteCategory (
+        @Path("id") id: String
+    ): Response<Unit>
 }

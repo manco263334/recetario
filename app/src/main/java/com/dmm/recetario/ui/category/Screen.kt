@@ -88,69 +88,6 @@ fun CategoryScreen (
             floatingActionButtonPosition = FabPosition.End
         )
     }
-
-//    val state = viewModel.uiState
-
-//    LaunchedEffect (state) {
-//        Log.d("CategoryScreen", "State: $state")
-//        if (state is CategoryUiState.Idle) {
-//            viewModel.loadRecipes(categoryId)
-//        }
-//    }
-
-//    when (state) {
-//        is CategoryUiState.Success -> {
-//            ModalNavigationDrawer (
-//                drawerState = drawerState,
-//                gesturesEnabled = true,
-//                drawerContent = {
-//                    DrawerContent (
-//                        scaffoldState = drawerState,
-//                        user = user,
-//                        onSettingsClick = onSettingsClick,
-//                        onLogOutSuccess = onLogOutSuccess,
-//                        onHomeClick = onHomeClick
-//                    )
-//                }
-//            ) {
-//                Scaffold (
-//                    topBar = {
-//                        Toolbar (
-//                            scaffoldState = drawerState
-//                        ) {
-//                            WelcomeHeader(user)
-//                        }
-//                    },
-//                    content = { paddingValues ->
-//                        CategoryContent (
-//                            paddingValues = paddingValues,
-//                            recipes = state.recipes,
-//                            onRecipeClick = onRecipeClick
-//                        )
-//                    },
-//                    floatingActionButton = {
-//                        if (user.isNotAnonymous()) {
-//                            FAB(onCompleteForm = onCompleteForm)
-//                        }
-//                    },
-//                    floatingActionButtonPosition = FabPosition.End
-//                )
-//            }
-//        }
-//
-//        is CategoryUiState.Error -> {
-//            ErrorScreen (
-//                message = state.message,
-//                onRetry = { viewModel.loadRecipes(categoryId) }
-//            )
-//        }
-//
-//        else -> {
-//            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-//                CircularProgressIndicator()
-//            }
-//        }
-//    }
 }
 
 @Composable
@@ -170,7 +107,7 @@ private fun CategoryContent (
     ) {
         item(span = { GridItemSpan(2) }) {
             Text (
-                text = if (recipes.isNotEmpty()) "Categorías disponibles" else "No hay categorías",
+                text = if (recipes.isNotEmpty()) "Retecas disponibles" else "No hay recetas",
                 textAlign = TextAlign.Center,
                 modifier = Modifier.fillMaxWidth(),
                 fontWeight = FontWeight.Bold

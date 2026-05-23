@@ -5,13 +5,14 @@ import com.dmm.recetario.core.utils.handler.handleApiCall
 import com.dmm.recetario.core.utils.mapper.toDomain
 import com.dmm.recetario.data.remote.retrofit.APIRecipeService
 import com.dmm.recetario.domain.model.Recipe
-import com.dmm.recetario.domain.repository.IRecipeRepository
 import jakarta.inject.Inject
 
 class RecipeRepository @Inject constructor (
     private val apiRecipeService: APIRecipeService
-): IRecipeRepository {
-    override suspend fun createRecipe(data: Recipe): Recipe {
+){
+    suspend fun createRecipe (
+        data: Recipe
+    ): Recipe {
         val recipe = handleApiCall { apiRecipeService.createRecipe(data) }
 
         assert(recipe.isNotNull())
@@ -19,20 +20,43 @@ class RecipeRepository @Inject constructor (
         return recipe!!.toDomain()
     }
 
-    override suspend fun getAllRecipes(): List<Recipe> {
-        val recipes = handleApiCall { apiRecipeService.getAllRecipes() }
+    suspend fun getAllRecipes (
+        page: Int = 0,
+        size: Int = 10,
+        withCategories: Boolean? = null,
+        withCreator: Boolean? = null
+    ): List<Recipe> {
+        val recipes = handleApiCall {
+            apiRecipeService.getAllRecipes (
+                page = page,
+                size = size,
+                withCategories = withCategories,
+                withCreator = withCreator
+            )
+        }
+
         return recipes?.content?.map { it.toDomain() } ?: emptyList()
     }
 
-    override suspend fun getRecipe(id: String): Recipe {
-        val recipe = handleApiCall { apiRecipeService.getRecipe(id) }
+    suspend fun getRecipe (
+        id: String,
+        withCategories: Boolean? = null,
+        withCreator: Boolean? = null
+    ): Recipe {
+        val recipe = handleApiCall {
+            apiRecipeService.getRecipe (
+                id = id,
+                withCategories = withCategories,
+                withCreator = withCreator
+            )
+        }
 
         assert(recipe.isNotNull())
 
         return recipe!!.toDomain()
     }
 
-    override suspend fun updateRecipe (
+    suspend fun updateRecipe (
         id: String,
         data: Recipe
     ): Recipe {
@@ -43,7 +67,7 @@ class RecipeRepository @Inject constructor (
         return recipe!!.toDomain()
     }
 
-    override suspend fun deleteRecipe(id: String) {
+    suspend fun deleteRecipe(id: String) {
         handleApiCall { apiRecipeService.deleteRecipe(id) }
     }
 }
