@@ -44,6 +44,6 @@ fun User.toEntity(): UserEntity {
         role = this.role,
         phone = this.phone,
         username = this.username,
-        icon = this.icon
+        icon = this.icon,
     )
 }

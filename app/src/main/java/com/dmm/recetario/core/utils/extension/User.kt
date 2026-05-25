@@ -6,10 +6,13 @@ import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
 
 @OptIn(ExperimentalContracts::class)
-fun User?.isNotAnonymous(): Boolean {
+fun User?.isNeitherNullNorAnonymous(): Boolean {
     contract {
-        returns(true) implies (this@isNotAnonymous != null && this@isNotAnonymous !is AnonymousUser)
+        returns(true) implies (
+            this@isNeitherNullNorAnonymous != null &&
+            this@isNeitherNullNorAnonymous !is AnonymousUser
+        )
     }
 
-    return this !is AnonymousUser
+    return this != null && this !is AnonymousUser
 }

@@ -25,7 +25,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.dmm.recetario.core.utils.extension.isNotAnonymous
+import com.dmm.recetario.core.utils.extension.isNeitherNullNorAnonymous
 import com.dmm.recetario.domain.model.Recipe
 import com.dmm.recetario.domain.model.User
 import com.dmm.recetario.ui.components.Toolbar
@@ -81,7 +81,7 @@ fun CategoryScreen (
                 )
             },
             floatingActionButton = {
-                if (user.isNotAnonymous()) {
+                if (user.isNeitherNullNorAnonymous()) {
                     FAB(onCompleteForm = onCompleteForm)
                 }
             },

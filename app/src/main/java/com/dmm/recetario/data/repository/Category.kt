@@ -9,7 +9,7 @@ import jakarta.inject.Inject
 
 class CategoryRepository @Inject constructor (
     private val apiCategoryService: APICategoryService
-){
+) {
     suspend fun createCategory(data: Category): Category {
         val category = handleApiCall { apiCategoryService.createCategory(data) }
 

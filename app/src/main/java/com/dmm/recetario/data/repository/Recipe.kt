@@ -9,7 +9,7 @@ import jakarta.inject.Inject
 
 class RecipeRepository @Inject constructor (
     private val apiRecipeService: APIRecipeService
-){
+) {
     suspend fun createRecipe (
         data: Recipe
     ): Recipe {

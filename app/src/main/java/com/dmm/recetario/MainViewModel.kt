@@ -1,56 +1,76 @@
 package com.dmm.recetario
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dmm.recetario.data.local.TokenManager
 import com.dmm.recetario.data.local.UserManager
 import com.dmm.recetario.data.service.CategoryService
 import com.dmm.recetario.data.service.RecipeService
+import com.dmm.recetario.data.service.UserService
 import com.dmm.recetario.domain.model.AnonymousUser
 import com.dmm.recetario.domain.model.User
 import com.dmm.recetario.navigation.Routes
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
-import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.SharingStarted
 
 @HiltViewModel
 class MainViewModel @Inject constructor (
     private val tokenManager: TokenManager,
-    private val userManager: UserManager,
+    private val userService: UserService,
     private val recipeService: RecipeService,
-    private val categoryService: CategoryService
+    private val categoryService: CategoryService,
+    private val userManager: UserManager
 ): ViewModel() {
-    var startDestination by mutableStateOf<Routes?>(null)
-        private set
+    private val _token = tokenManager.token
 
-    var user by mutableStateOf<User?>(null)
-        private set
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val user: StateFlow<User?> = _token
+        .flatMapLatest { token ->
+            Log.d("MainViewModel", "Valor de token: $token")
+            if (token == null) {
+                flowOf(null)
+            } else if (token.isBlank()) {
+                flowOf(AnonymousUser())
+            } else {
+                userService.getUserByTokenOrAnonymous(token)
+            }
+        }
+        .stateIn (
+            scope = viewModelScope,
+            started = SharingStarted.Eagerly,
+            initialValue = null
+        )
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val startDestination: StateFlow<Routes?> = _token
+        .flatMapLatest { token ->
+        if (token == null) {
+            flowOf(Routes.Login)
+        } else {
+            flowOf(Routes.Home)
+        }
+    }
+    .stateIn (
+        scope = viewModelScope,
+        started = SharingStarted.Eagerly,
+        initialValue = null
+    )
 
     init {
-        initUser()
-        checkAuthStatus()
         sync()
-    }
-
-    private fun checkAuthStatus() {
-        viewModelScope.launch {
-            val token = tokenManager.token.firstOrNull()
-            startDestination = if (token != null) Routes.Home else Routes.Login
-        }
-    }
-
-    private fun initUser() {
-        viewModelScope.launch {
-            user = userManager.getUser() ?: AnonymousUser()
-        }
     }
 
     private fun sync() {
         viewModelScope.launch {
+            userManager.syncUser()
             recipeService.syncRecipes(withCategories = true)
             categoryService.syncCategories(withRecipes = true)
         }

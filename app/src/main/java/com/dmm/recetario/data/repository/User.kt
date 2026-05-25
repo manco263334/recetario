@@ -9,7 +9,7 @@ import jakarta.inject.Inject
 
 class UserRepository @Inject constructor (
     private val apiUserService: APIUserService
-){
+) {
     suspend fun getAllUsers (
         page: Int = 0,
         size: Int = 10,

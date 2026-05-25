@@ -7,6 +7,7 @@ import com.dmm.recetario.core.utils.mapper.toDomain
 import com.dmm.recetario.core.utils.mapper.toEntity
 import com.dmm.recetario.data.local.database.dao.UserDAO
 import com.dmm.recetario.data.repository.UserRepository
+import com.dmm.recetario.domain.model.AnonymousUser
 import com.dmm.recetario.domain.model.User
 import com.dmm.recetario.domain.use_cases.user.DeleteUserUseCase
 import com.dmm.recetario.domain.use_cases.user.UpdateUserUseCase
@@ -23,9 +24,9 @@ class UserService @Inject constructor (
     private val userRepository: UserRepository
 ) {
     fun getAllUsers(): Flow<List<User>> {
-        return dao.getUsers().map {
-            it.map { entity ->
-                entity.toDomain()
+        return dao.getUsers().map { users ->
+            users.map { user ->
+                user.toDomain()
             }
         }
     }
@@ -62,6 +63,15 @@ class UserService @Inject constructor (
     fun getUserByUsername(username: String): Flow<User?> {
         return dao.getUserByUsername(username).map { user ->
             user?.toDomain()
+        }
+    }
+
+    fun getUserByTokenOrAnonymous(token: String): Flow<User?> {
+        Log.d("UserService", "getUserByTokenOrAnonymous: $token")
+
+        return dao.getUserByToken(token).map { user ->
+            Log.d("UserService", "getUserByTokenOrAnonymous: $user")
+            user?.toDomain() ?: AnonymousUser()
         }
     }
 

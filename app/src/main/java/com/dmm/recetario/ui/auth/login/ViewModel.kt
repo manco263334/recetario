@@ -6,6 +6,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dmm.recetario.data.local.TokenManager
+import com.dmm.recetario.data.local.UserManager
 import com.dmm.recetario.data.local.database.dao.UserDAO
 import com.dmm.recetario.data.local.database.entity.TokenUserRef
 import com.dmm.recetario.data.service.AuthService
@@ -18,6 +19,7 @@ import kotlinx.coroutines.launch
 class LoginViewModel @Inject constructor (
     private val service: AuthService,
     private val tokenManager: TokenManager,
+    private val userManager: UserManager,
     private val dao: UserDAO
 ): ViewModel() {
     var uiState by mutableStateOf<LoginUiState>(LoginUiState.Idle)
@@ -36,7 +38,8 @@ class LoginViewModel @Inject constructor (
                 val token = response.token
 
                 saveTokenToPreferences(token)
-                saveTokenToDatabase(token, email)
+                insertTokenReference(token, email)
+                syncUserLocally()
                 uiState = LoginUiState.Success(token)
             } catch (e: Exception) {
                 uiState = LoginUiState.Error("Error: ${e.message}")
@@ -44,12 +47,16 @@ class LoginViewModel @Inject constructor (
         }
     }
 
+    private suspend fun syncUserLocally() {
+        userManager.syncUser()
+    }
+
     private suspend fun saveTokenToPreferences(token: String) {
         tokenManager.saveToken(token)
     }
 
-    private fun saveTokenToDatabase(token: String, email: String) {
-        dao.insertReferences(listOf(TokenUserRef(token, email)))
+    private suspend fun insertTokenReference(token: String, email: String) {
+        dao.insertTokenRefs(listOf(TokenUserRef(token, email)))
     }
 
     fun loginAsGuest() {

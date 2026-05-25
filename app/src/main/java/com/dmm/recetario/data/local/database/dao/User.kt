@@ -14,30 +14,25 @@ interface UserDAO {
     @Query("SELECT * FROM users")
     fun getUsers(): Flow<List<UserEntity>>
 
-    @Query("SELECT * FROM users WHERE id = :id")
+    @Query("SELECT * FROM users WHERE id = :id LIMIT 1")
     fun getUser(id: String): Flow<UserEntity?>
 
-    @Query("SELECT * FROM users WHERE email = :email")
+    @Query("SELECT * FROM users WHERE email = :email LIMIT 1")
     fun getUserByEmail(email: String): Flow<UserEntity?>
 
-    @Query("SELECT * FROM users WHERE username = :username")
+    @Query("SELECT * FROM users WHERE username = :username LIMIT 1")
     fun getUserByUsername(username: String): Flow<UserEntity?>
 
     @Query ("""
-        SELECT u.* FROM tokens_users
-        INNER JOIN users u ON u.email = tokens_users.user_email
+        SELECT u.* FROM tokens_users AS t_u
+        INNER JOIN users AS u ON u.email = t_u.email
         WHERE token = :token
+        LIMIT 1
     """)
     fun getUserByToken(token: String): Flow<UserEntity?>
 
     @Upsert
-    fun insertReferences(refs: List<TokenUserRef>)
-
-    @Query("DELETE FROM tokens_users WHERE token = :token")
-    suspend fun deleteReference(token: String)
-
-    @Query("DELETE FROM tokens_users")
-    suspend fun clearReferences()
+    suspend fun insertTokenRefs(references: List<TokenUserRef>)
 
     @Upsert
     suspend fun saveUsers(users: List<UserEntity>)

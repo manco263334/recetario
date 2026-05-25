@@ -20,7 +20,7 @@ import com.dmm.recetario.data.local.database.entity.UserEntity
         RecipeCategoryCrossRef::class,
         TokenUserRef::class
     ],
-    version = 2,
+    version = 4,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
