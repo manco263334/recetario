@@ -13,6 +13,8 @@ import com.dmm.recetario.data.service.AuthService
 import com.dmm.recetario.domain.repository.LoginData
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
 
 @HiltViewModel
@@ -37,9 +39,12 @@ class LoginViewModel @Inject constructor (
                 val response = service.login(data)
                 val token = response.token
 
-                saveTokenToPreferences(token)
-                insertTokenReference(token, email)
-                syncUserLocally()
+                awaitAll (
+                    async { saveTokenToPreferences(token) },
+                    async { insertTokenReference(token, email) },
+                    async { syncUserLocally() }
+                )
+
                 uiState = LoginUiState.Success(token)
             } catch (e: Exception) {
                 uiState = LoginUiState.Error("Error: ${e.message}")

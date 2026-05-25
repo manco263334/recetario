@@ -13,6 +13,8 @@ import com.dmm.recetario.data.service.AuthService
 import com.dmm.recetario.domain.repository.RegisterData
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
 
 @HiltViewModel
@@ -40,9 +42,12 @@ class RegisterViewModel @Inject constructor (
                 val response = service.register(data)
                 val token = response.token
 
-                saveTokenToPreferences(token)
-                insertTokenReference(token, email)
-                syncUserLocally()
+                awaitAll (
+                    async { saveTokenToPreferences(token) },
+                    async { insertTokenReference(token, email) },
+                    async { syncUserLocally() }
+                )
+
                 uiState = RegisterUiState.Success(token)
             } catch (e: Exception) {
                 uiState = RegisterUiState.Error("Error: ${e.message}")

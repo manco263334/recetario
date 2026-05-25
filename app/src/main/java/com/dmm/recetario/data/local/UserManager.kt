@@ -30,7 +30,7 @@ class UserManager @Inject constructor (
         val token = tokenManager.token.firstOrNull()?.ifBlank { null }
 
         if (token == null) return
-3
+
         if (isTokenExpired(token)) return
 
         val userFromDao = userDao.getUserByToken(token).firstOrNull()?.toDomain()

@@ -1,6 +1,5 @@
 package com.dmm.recetario
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dmm.recetario.data.local.TokenManager
@@ -14,6 +13,8 @@ import com.dmm.recetario.navigation.Routes
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
@@ -34,7 +35,6 @@ class MainViewModel @Inject constructor (
     @OptIn(ExperimentalCoroutinesApi::class)
     val user: StateFlow<User?> = _token
         .flatMapLatest { token ->
-            Log.d("MainViewModel", "Valor de token: $token")
             if (token == null) {
                 flowOf(null)
             } else if (token.isBlank()) {
@@ -70,9 +70,11 @@ class MainViewModel @Inject constructor (
 
     private fun sync() {
         viewModelScope.launch {
-            userManager.syncUser()
-            recipeService.syncRecipes(withCategories = true)
-            categoryService.syncCategories(withRecipes = true)
+            awaitAll (
+                async { userManager.syncUser() },
+                        async { recipeService.syncRecipes(withCategories = true) },
+                        async { categoryService.syncCategories(withRecipes = true) }
+            )
         }
     }
 }

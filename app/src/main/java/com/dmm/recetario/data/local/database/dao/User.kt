@@ -40,6 +40,9 @@ interface UserDAO {
     @Query("DELETE FROM users")
     suspend fun clear()
 
+    @Query("DELETE FROM tokens_users")
+    suspend fun clearTokenRefs()
+
     @Query("DELETE FROM users WHERE id = :id")
     suspend fun deleteUser(id: String)
 

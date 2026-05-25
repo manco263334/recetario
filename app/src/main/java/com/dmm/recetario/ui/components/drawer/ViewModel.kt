@@ -18,7 +18,8 @@ import kotlinx.coroutines.withContext
 @HiltViewModel
 class DrawerViewModel @Inject constructor (
     private val tokenManager: TokenManager,
-    private val authService: AuthService
+    private val authService: AuthService,
+    private val userDAO: UserDAO
 ): ViewModel() {
     var logOutSuccessful by mutableStateOf<Boolean?>(null)
         private set
@@ -28,6 +29,8 @@ class DrawerViewModel @Inject constructor (
             try {
                 authService.logout()
                 tokenManager.clearToken()
+                userDAO.clear()
+                userDAO.clearTokenRefs()
 
                 logOutSuccessful = true
             } catch (e: Exception) {
