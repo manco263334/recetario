@@ -1,12 +1,6 @@
 package com.dmm.recetario.ui.auth.register
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.rememberInfiniteTransition
-import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.background
@@ -33,12 +27,10 @@ import androidx.compose.material.icons.filled.PersonAdd
 import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
-import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -56,24 +48,23 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.dmm.recetario.ui.components.CookingLoadingScreen
+import com.dmm.recetario.ui.components.ErrorScreen
 
 @Composable
 fun RegisterScreen (
-    viewModel: RegisterViewModel = hiltViewModel(),
     onNavigateToHome: () -> Unit,
-    onNavigateToLogin: () -> Unit
+    onNavigateToLogin: () -> Unit,
+    viewModel: RegisterViewModel = hiltViewModel()
 ) {
     RegisterContent (
         uiState = viewModel.uiState,
@@ -117,7 +108,10 @@ fun RegisterContent (
         when (uiState) {
             is RegisterUiState.Loading -> CookingLoadingScreen()
             is RegisterUiState.Error -> {
-                RegisterError (message = uiState.message, onRetry = onRetry)
+                ErrorScreen (
+                    message = uiState.message,
+                    onRetry = onRetry
+                )
             }
             else -> {
                 RegisterForm (
@@ -125,52 +119,6 @@ fun RegisterContent (
                     onNavigateToLogin = onNavigateToLogin
                 )
             }
-        }
-    }
-}
-
-@Composable
-private fun RegisterError (
-    message: String,
-    onRetry: () -> Unit
-) {
-    val infiniteTransition = rememberInfiniteTransition(label = "rebote")
-    val translateY by infiniteTransition.animateFloat (
-        initialValue = 0f,
-        targetValue = -20f,
-        animationSpec = infiniteRepeatable (
-            animation = tween(500, easing = FastOutSlowInEasing),
-            repeatMode = RepeatMode.Reverse
-        ),
-        label = "y"
-    )
-
-    Column (
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Icon (
-            imageVector = Icons.Default.Warning,
-            contentDescription = null,
-            modifier = Modifier
-                .size(80.dp)
-                .graphicsLayer(translationY = translateY), // Aplicamos el rebote
-            tint = MaterialTheme.colorScheme.error
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Text (
-            text = message,
-            color = MaterialTheme.colorScheme.error,
-            textAlign = TextAlign.Center
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Button(onClick = onRetry) {
-            Text("Intentar de nuevo")
         }
     }
 }
@@ -185,9 +133,7 @@ private fun RegisterForm (
     var password by rememberSaveable { mutableStateOf("") }
     var phone by rememberSaveable { mutableStateOf("") }
     var username by rememberSaveable { mutableStateOf("") }
-    var passwordVisible by rememberSaveable {
-        mutableStateOf(false)
-    }
+    var passwordVisible by rememberSaveable { mutableStateOf(false) }
 
     val keyboardController = LocalSoftwareKeyboardController.current
 
@@ -426,14 +372,5 @@ private fun RegisterScreenPreview() {
         onRetry = {},
         onNavigateToHome = {},
         onNavigateToLogin = {}
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun RegisterErrorPreview() {
-    RegisterError (
-        message = "Algo salió mal",
-        onRetry = {}
     )
 }

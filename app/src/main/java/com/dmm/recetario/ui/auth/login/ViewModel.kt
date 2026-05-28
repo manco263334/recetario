@@ -42,8 +42,9 @@ class LoginViewModel @Inject constructor (
                 awaitAll (
                     async { saveTokenToPreferences(token) },
                     async { insertTokenReference(token, email) },
-                    async { syncUserLocally() }
                 )
+
+                syncUserLocally()
 
                 uiState = LoginUiState.Success(token)
             } catch (e: Exception) {

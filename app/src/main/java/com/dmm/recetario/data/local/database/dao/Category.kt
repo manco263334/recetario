@@ -14,7 +14,7 @@ interface CategoryDAO {
     @Query("SELECT * FROM categories")
     fun getCategories(): Flow<List<CategoryEntity>>
 
-    @Query("SELECT * FROM categories WHERE id = :id")
+    @Query("SELECT * FROM categories WHERE id = :id LIMIT 1")
     fun getCategory(id: String): Flow<CategoryEntity?>
 
     @Upsert
@@ -31,9 +31,9 @@ interface CategoryDAO {
 
     @Transaction
     @Query ("""
-            SELECT r.* FROM categories_recipes 
-            INNER JOIN recipes as r ON r.id = recipe_id
-            WHERE category_id = :categoryId
-            """)
+        SELECT r.* FROM categories_recipes 
+        INNER JOIN recipes AS r ON r.id = recipe_id
+        WHERE category_id = :categoryId
+    """)
     fun getRecipes(categoryId: String): Flow<List<RecipeEntity>>
 }

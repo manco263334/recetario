@@ -16,7 +16,7 @@ interface RecipeDAO {
     @Query("SELECT * FROM recipes")
     fun getRecipes(): Flow<List<RecipeEntity>>
 
-    @Query("SELECT * FROM recipes WHERE id = :id")
+    @Query("SELECT * FROM recipes WHERE id = :id LIMIT 1")
     fun getRecipe(id: String): Flow<RecipeEntity?>
 
     @Upsert
@@ -32,7 +32,12 @@ interface RecipeDAO {
     suspend fun deleteRecipe(id: String)
 
     @Transaction
-    @Query("SELECT * FROM users WHERE id = :recipeId")
+    @Query ("""
+        SELECT u.* FROM users AS u
+        INNER JOIN recipes AS r ON r.user_id = u.id
+        WHERE r.id = :recipeId
+        LIMIT 1
+    """)
     fun getUser(recipeId: String): Flow<UserEntity?>
 
     @Transaction
@@ -40,6 +45,6 @@ interface RecipeDAO {
         SELECT c.* FROM categories_recipes
         INNER JOIN categories AS c on c.id = category_id
         WHERE recipe_id = :recipeId
-        """)
+    """)
     fun getCategories(recipeId: String): Flow<List<CategoryEntity>>
 }

@@ -52,17 +52,17 @@ class MainViewModel @Inject constructor (
     @OptIn(ExperimentalCoroutinesApi::class)
     val startDestination: StateFlow<Routes?> = _token
         .flatMapLatest { token ->
-        if (token == null) {
-            flowOf(Routes.Login)
-        } else {
-            flowOf(Routes.Home)
+            if (token == null) {
+                flowOf(Routes.Login)
+            } else {
+                flowOf(Routes.Home)
+            }
         }
-    }
-    .stateIn (
-        scope = viewModelScope,
-        started = SharingStarted.Eagerly,
-        initialValue = null
-    )
+        .stateIn (
+            scope = viewModelScope,
+            started = SharingStarted.Eagerly,
+            initialValue = null
+        )
 
     init {
         sync()
@@ -72,8 +72,9 @@ class MainViewModel @Inject constructor (
         viewModelScope.launch {
             awaitAll (
                 async { userManager.syncUser() },
-                        async { recipeService.syncRecipes(withCategories = true) },
-                        async { categoryService.syncCategories(withRecipes = true) }
+                async { userService.syncUsers() },
+                async { recipeService.syncRecipes(withCategories = true) },
+                async { categoryService.syncCategories(withRecipes = true) }
             )
         }
     }

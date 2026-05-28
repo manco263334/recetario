@@ -1,7 +1,7 @@
 package com.dmm.recetario.data.local
 
 import android.util.Log
-import com.dmm.recetario.core.utils.isTokenExpired
+import com.dmm.recetario.core.jwt.isTokenExpired
 import com.dmm.recetario.core.utils.mapper.toDomain
 import com.dmm.recetario.core.utils.mapper.toEntity
 import com.dmm.recetario.data.local.database.dao.UserDAO

@@ -8,12 +8,12 @@ suspend fun <T> handleApiCall(call: suspend () -> Response<T>): T? {
         if (response.isSuccessful) {
             response.body()
         } else {
-            val code = response.code()
-            when (code) {
+            when (val code = response.code()) {
                 400 -> throw APIException.BadRequestException("Solicitud incorrecta")
                 401 -> throw APIException.UnauthorizedException("No tienes permiso")
                 403 -> throw APIException.ForbiddenException("Prohibido")
                 404 -> throw APIException.NotFoundException("No se encontró el recurso")
+                422 -> throw APIException.UnprocessableEntityException("Entidad inprocesable")
                 429 -> throw APIException.TooManyRequestsException("Demasiadas solicitudes")
 
                 500 -> throw APIException.ServerException("El server explotó")

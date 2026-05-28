@@ -67,10 +67,7 @@ class UserService @Inject constructor (
     }
 
     fun getUserByTokenOrAnonymous(token: String): Flow<User?> {
-        Log.d("UserService", "getUserByTokenOrAnonymous: $token")
-
         return dao.getUserByToken(token).map { user ->
-            Log.d("UserService", "getUserByTokenOrAnonymous: $user")
             user?.toDomain() ?: AnonymousUser()
         }
     }

@@ -45,8 +45,9 @@ class RegisterViewModel @Inject constructor (
                 awaitAll (
                     async { saveTokenToPreferences(token) },
                     async { insertTokenReference(token, email) },
-                    async { syncUserLocally() }
                 )
+
+                syncUserLocally()
 
                 uiState = RegisterUiState.Success(token)
             } catch (e: Exception) {

@@ -48,8 +48,8 @@ interface UserDAO {
 
     @Transaction
     @Query ("""
-            SELECT * FROM recipes
-            WHERE user_id = :userId
-            """)
+        SELECT * FROM recipes
+        WHERE user_id = :userId
+    """)
     fun getRecipes(userId: String): Flow<List<RecipeEntity>>
 }

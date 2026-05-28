@@ -1,4 +1,4 @@
-package com.dmm.recetario.core.utils
+package com.dmm.recetario.core.jwt
 
 fun isTokenExpired(token: String): Boolean {
     if (token.isBlank()) return true

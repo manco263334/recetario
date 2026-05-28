@@ -1,6 +1,5 @@
 package com.dmm.recetario.ui.auth.login
 
-import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.slideInVertically
@@ -21,15 +20,12 @@ import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
-import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -55,7 +51,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -65,9 +60,9 @@ import com.dmm.recetario.ui.components.ErrorScreen
 
 @Composable
 fun LoginScreen (
-    viewModel: LoginViewModel = hiltViewModel(),
     onNavigateToHome: () -> Unit,
-    onNavigateToRegister: () -> Unit
+    onNavigateToRegister: () -> Unit,
+    viewModel: LoginViewModel = hiltViewModel()
 ) {
     LoginContent (
         uiState = viewModel.uiState,
@@ -88,8 +83,6 @@ private fun LoginContent (
     onNavigateToHome: () -> Unit,
     onNavigateToRegister: () -> Unit
 ) {
-    Log.d("LoginScreen", "uiState: $uiState")
-
     LaunchedEffect(uiState) {
         if (uiState is LoginUiState.Success) {
             onNavigateToHome()
@@ -140,6 +133,7 @@ private fun LoginForm (
     var email by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
     var passwordVisible by rememberSaveable { mutableStateOf(false) }
+
     val keyboardController = LocalSoftwareKeyboardController.current
 
     AnimatedVisibility (
