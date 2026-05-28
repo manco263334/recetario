@@ -33,6 +33,7 @@ import com.dmm.recetario.ui.components.WelcomeHeader
 import com.dmm.recetario.ui.components.WellnessCard
 import com.dmm.recetario.ui.components.drawer.DrawerContent
 import com.dmm.recetario.ui.components.fab.FAB
+import com.dmm.recetario.ui.components.refresher.PullToRefresh
 
 @Composable
 fun CategoryScreen (
@@ -77,7 +78,8 @@ fun CategoryScreen (
                 CategoryContent (
                     paddingValues = paddingValues,
                     recipes = recipes,
-                    onRecipeClick = onRecipeClick
+                    onRecipeClick = onRecipeClick,
+                    onRefresh = viewModel::refresh
                 )
             },
             floatingActionButton = {
@@ -94,32 +96,37 @@ fun CategoryScreen (
 private fun CategoryContent (
     paddingValues: PaddingValues,
     recipes: List<Recipe>,
-    onRecipeClick: (Recipe) -> Unit
+    onRecipeClick: (Recipe) -> Unit,
+    onRefresh: () -> Unit
 ) {
-    LazyVerticalGrid (
-        columns = GridCells.Fixed(2),
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(paddingValues),
-        contentPadding = PaddingValues(16.dp),
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+    PullToRefresh (
+        onRefresh = onRefresh
     ) {
-        item(span = { GridItemSpan(2) }) {
-            Text (
-                text = if (recipes.isNotEmpty()) "Retecas disponibles" else "No hay recetas",
-                textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth(),
-                fontWeight = FontWeight.Bold
-            )
-        }
+        LazyVerticalGrid (
+            columns = GridCells.Fixed(2),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues),
+            contentPadding = PaddingValues(16.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            item(span = { GridItemSpan(2) }) {
+                Text (
+                    text = if (recipes.isNotEmpty()) "Retecas disponibles" else "No hay recetas",
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.fillMaxWidth(),
+                    fontWeight = FontWeight.Bold
+                )
+            }
 
-        items(recipes) { recipe ->
-            WellnessCard (
-                title = recipe.name,
-                onClick = { recipe.let(onRecipeClick) },
-                backgroundColor = Color.White
-            )
+            items(recipes) { recipe ->
+                WellnessCard (
+                    title = recipe.name,
+                    onClick = { recipe.let(onRecipeClick) },
+                    backgroundColor = Color.White
+                )
+            }
         }
     }
 }

@@ -23,6 +23,9 @@ interface RecipeDAO {
     suspend fun saveRecipes(recipes: List<RecipeEntity>)
 
     @Upsert
+    suspend fun saveRecipe(recipe: RecipeEntity)
+
+    @Upsert
     suspend fun insertReferences(refs: List<RecipeCategoryCrossRef>)
 
     @Query("DELETE FROM recipes")

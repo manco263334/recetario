@@ -34,6 +34,7 @@ import com.dmm.recetario.ui.components.Toolbar
 import com.dmm.recetario.ui.components.WelcomeHeader
 import com.dmm.recetario.ui.components.drawer.DrawerContent
 import com.dmm.recetario.ui.components.fab.FAB
+import com.dmm.recetario.ui.components.refresher.PullToRefresh
 
 @Composable
 fun RecipeScreen (
@@ -76,7 +77,8 @@ fun RecipeScreen (
             content = { paddingValues ->
                 RecipeContent (
                     paddingValues = paddingValues,
-                    recipe = recipe
+                    recipe = recipe,
+                    onRefresh = viewModel::refresh
                 )
             },
             floatingActionButton = {
@@ -92,87 +94,92 @@ fun RecipeScreen (
 @Composable
 private fun RecipeContent (
     paddingValues: PaddingValues,
-    recipe: Recipe?
+    recipe: Recipe?,
+    onRefresh: () -> Unit
 ) {
-    Column (
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(paddingValues)
-            .padding(top = 16.dp)
-            .verticalScroll(rememberScrollState())
+    PullToRefresh (
+        onRefresh = onRefresh
     ) {
-        recipe?.let {
-            Card (
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
-            ) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    Text(text = it.name, style = MaterialTheme.typography.headlineMedium)
+        Column (
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .padding(top = 16.dp)
+                .verticalScroll(rememberScrollState())
+        ) {
+            recipe?.let {
+                Card (
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+                ) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Text(text = it.name, style = MaterialTheme.typography.headlineMedium)
 
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(text = "Tiempo total: ${it.totalTimeInMinutes} min")
-                    Text(text = "Preparación: ${it.preparationTimeInMinutes} min")
-                    Text(text = "Cocción: ${it.cookingTimeInMinutes} min")
-                }
-            }
-
-            Card (
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
-            ) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    Text (
-                        text = "Ingredientes",
-                        style = MaterialTheme.typography.titleLarge,
-                        textAlign = TextAlign.Center,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    it.ingredients.forEach { ingredient ->
-                        Text(text = "* ${ingredient["quantity"] ?: "N/A"} de ${ingredient["name"] ?: "N/A"}")
                         Spacer(modifier = Modifier.height(8.dp))
+                        Text(text = "Tiempo total: ${it.totalTimeInMinutes} min")
+                        Text(text = "Preparación: ${it.preparationTimeInMinutes} min")
+                        Text(text = "Cocción: ${it.cookingTimeInMinutes} min")
                     }
                 }
-            }
 
-            Card (
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
-            ) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    Text (
-                        text = "Pasos",
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.Bold,
-                        textAlign = TextAlign.Center
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    var index = 0
-                    it.steps.forEach { step ->
-                        Text(text = "${index++}. $step")
+                Card (
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+                ) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Text (
+                            text = "Ingredientes",
+                            style = MaterialTheme.typography.titleLarge,
+                            textAlign = TextAlign.Center,
+                            fontWeight = FontWeight.Bold
+                        )
                         Spacer(modifier = Modifier.height(8.dp))
+                        it.ingredients.forEach { ingredient ->
+                            Text(text = "* ${ingredient["quantity"] ?: "N/A"} de ${ingredient["name"] ?: "N/A"}")
+                            Spacer(modifier = Modifier.height(8.dp))
+                        }
                     }
                 }
-            }
 
-            Card (
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
-            ) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    Text(text = "Calificación: ${it.stars} ⭐", style = MaterialTheme.typography.titleLarge)
+                Card (
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+                ) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Text (
+                            text = "Pasos",
+                            style = MaterialTheme.typography.titleLarge,
+                            fontWeight = FontWeight.Bold,
+                            textAlign = TextAlign.Center
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        var index = 0
+                        it.steps.forEach { step ->
+                            Text(text = "${index++}. $step")
+                            Spacer(modifier = Modifier.height(8.dp))
+                        }
+                    }
                 }
+
+                Card (
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+                ) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Text(text = "Calificación: ${it.stars} ⭐", style = MaterialTheme.typography.titleLarge)
+                    }
+                }
+            } ?: run {
+                Text(text = "No hay receta disponible", style = MaterialTheme.typography.bodyLarge)
             }
-        } ?: run {
-            Text(text = "No hay receta disponible", style = MaterialTheme.typography.bodyLarge)
         }
     }
 }

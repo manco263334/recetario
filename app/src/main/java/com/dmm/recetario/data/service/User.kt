@@ -35,16 +35,19 @@ class UserService @Inject constructor (
         page: Int = 0,
         size: Int = 10,
         withRecipes: Boolean? = null
-    ) {
-        try {
+    ): Boolean {
+        return try {
             val users = userRepository.getAllUsers (
                 page = page,
                 size = size,
                 withRecipes = withRecipes
             )
             dao.saveUsers(users.map { it.toEntity() })
+
+            true
         } catch (e: APIException) {
             Log.e("UserService", "Error syncing users: ${e.message}", e)
+            false
         }
     }
 

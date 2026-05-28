@@ -21,10 +21,12 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.dmm.recetario.core.utils.extension.isNeitherNullNorAnonymous
+import com.dmm.recetario.domain.model.AnonymousUser
 import com.dmm.recetario.domain.model.Category
 import com.dmm.recetario.domain.model.User
 import com.dmm.recetario.ui.components.drawer.DrawerContent
@@ -32,6 +34,7 @@ import com.dmm.recetario.ui.components.Toolbar
 import com.dmm.recetario.ui.components.WelcomeHeader
 import com.dmm.recetario.ui.components.WellnessCard
 import com.dmm.recetario.ui.components.fab.FAB
+import com.dmm.recetario.ui.components.refresher.PullToRefresh
 import kotlinx.coroutines.launch
 
 @Composable
@@ -77,7 +80,8 @@ fun HomeScreen (
             HomeContent (
                 paddingValues = paddingValues,
                 categories = categories,
-                onCategoryClick = onCategoryClick
+                onCategoryClick = onCategoryClick,
+                onRefresh = viewModel::sync
             )
         }
     }
@@ -87,32 +91,36 @@ fun HomeScreen (
 private fun HomeContent (
     paddingValues: PaddingValues,
     categories: List<Category>,
-    onCategoryClick: (Category) -> Unit
+    onCategoryClick: (Category) -> Unit,
+    onRefresh: () -> Unit
 ) {
-    LazyVerticalGrid (
-        columns = GridCells.Fixed(2),
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(paddingValues),
-        contentPadding = PaddingValues(16.dp),
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+    PullToRefresh (
+        onRefresh = onRefresh,
+        modifier = Modifier.padding(paddingValues)
     ) {
-        item(span = { GridItemSpan(2) }) {
-            Text (
-                text = if (categories.isNotEmpty()) "Categorías disponibles" else "No hay categorías",
-                textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth(),
-                fontWeight = FontWeight.Bold
-            )
-        }
+        LazyVerticalGrid (
+            columns = GridCells.Fixed(2),
+            modifier = Modifier.fillMaxSize(),
+            contentPadding = PaddingValues(16.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            item(span = { GridItemSpan(2) }) {
+                Text (
+                    text = if (categories.isNotEmpty()) "Categorías disponibles" else "No hay categorías",
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.fillMaxWidth(),
+                    fontWeight = FontWeight.Bold
+                )
+            }
 
-        items(categories) { category ->
-            WellnessCard (
-                title = category.name,
-                onClick = { onCategoryClick(category) },
-                backgroundColor = MaterialTheme.colorScheme.onBackground
-            )
+            items(categories) { category ->
+                WellnessCard (
+                    title = category.name,
+                    onClick = { onCategoryClick(category) },
+                    backgroundColor = MaterialTheme.colorScheme.onBackground
+                )
+            }
         }
     }
 }

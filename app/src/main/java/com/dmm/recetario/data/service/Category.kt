@@ -56,8 +56,8 @@ class CategoryService @Inject constructor (
         page: Int = 0,
         size: Int = 10,
         withRecipes: Boolean? = null
-    ) {
-        try {
+    ): Boolean {
+        return try {
             val categories = repository.getAllCategories (
                 page = page,
                 size = size,
@@ -73,8 +73,11 @@ class CategoryService @Inject constructor (
                     } ?: emptyList())
                 }
             }
+
+            true
         } catch (e: APIException) {
             Log.e("CategoryService", "Error syncing categories: ${e.message}", e)
+            false
         }
     }
 

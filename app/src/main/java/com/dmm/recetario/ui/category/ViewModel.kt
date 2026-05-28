@@ -60,4 +60,16 @@ class CategoryViewModel @Inject constructor (
             categoryService.syncCategories(withRecipes = true)
         }
     }
+
+    fun refresh() {
+        viewModelScope.launch {
+            val results = recipes.value.map { recipe ->
+                recipeService.syncRecipe(recipe.id)
+            }
+
+            if (results.any { !it }) {
+                throw Exception("Error sincronizando las recetas")
+            }
+        }
+    }
 }

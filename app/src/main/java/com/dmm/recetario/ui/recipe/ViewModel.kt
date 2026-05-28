@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 
 @HiltViewModel
 class RecipeViewModel @Inject constructor (
@@ -37,5 +38,15 @@ class RecipeViewModel @Inject constructor (
 
     fun loadRecipe(recipeId: String) {
         _selectedRecipeId.value = recipeId
+    }
+
+    fun refresh() {
+        viewModelScope.launch {
+            val result = recipe.value?.id?.let { recipeService.syncRecipe(it) }
+
+            if (result == false) {
+                throw Exception("Error sincronizando la receta")
+            }
+        }
     }
 }

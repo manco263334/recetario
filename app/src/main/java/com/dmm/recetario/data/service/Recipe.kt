@@ -48,8 +48,8 @@ class RecipeService @Inject constructor (
         size: Int = 10,
         withCategories: Boolean? = null,
         withCreator: Boolean? = null
-    ) {
-        try {
+    ): Boolean {
+        return try {
             val recipes = repository.getAllRecipes (
                 page = page,
                 size = size,
@@ -66,8 +66,23 @@ class RecipeService @Inject constructor (
                     } ?: emptyList())
                 }
             }
+
+            true
         } catch (e: APIException) {
             Log.e("RecipeService", "Error syncing recipes: ${e.message}", e)
+            false
+        }
+    }
+
+    suspend fun syncRecipe(id: String): Boolean {
+        return try {
+            val recipe = repository.getRecipe(id)
+
+            dao.saveRecipe(recipe.toEntity())
+            true
+        } catch (e: APIException) {
+            Log.e("RecipeService", "Error syncing recipe: ${e.message}", e)
+            false
         }
     }
 
