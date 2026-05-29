@@ -22,11 +22,11 @@ class RefresherViewModel @Inject constructor(): ViewModel() {
         viewModelScope.launch {
             uiState = RefresherUiState.Loading
 
-            uiState = try {
+            try {
                 call()
-                RefresherUiState.Success("Elements refreshed successfully")
+                uiState = RefresherUiState.Success("Elements refreshed successfully")
             } catch (e: Exception) {
-                RefresherUiState.Error("Error while refreshing elements: ${e.message}")
+                uiState = RefresherUiState.Error("${e.message}")
             } finally {
                 delay(3.seconds)
                 uiState = RefresherUiState.Idle

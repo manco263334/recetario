@@ -12,10 +12,13 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -43,6 +46,7 @@ fun HomeScreen (
     user: User?,
     viewModel: HomeViewModel = hiltViewModel(),
 ) {
+    val snackbarHostState = remember { SnackbarHostState() }
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     val categories by viewModel.categories.collectAsStateWithLifecycle()
@@ -55,15 +59,18 @@ fun HomeScreen (
                 user = user,
                 onSettingsClick = onSettingsClick,
                 onLogOutSuccess = onLogOutSuccess,
-                onHomeClick = { scope.launch { drawerState.close() } },
+                onHomeClick = {
+                    scope.launch {
+                        drawerState.close()
+                    }
+                },
             )
         }
     ) {
         Scaffold (
             topBar = {
                 Toolbar (
-                    scaffoldState = drawerState,
-                    modifier = Modifier,
+                    scaffoldState = drawerState
                 ) {
                     WelcomeHeader(user)
                 }
@@ -72,13 +79,17 @@ fun HomeScreen (
                 if (user.isNeitherNullNorAnonymous()) {
                     FAB(onCompleteForm = onCompleteForm)
                 }
+            },
+            snackbarHost = {
+                SnackbarHost(hostState = snackbarHostState)
             }
         ) { paddingValues ->
             HomeContent (
                 paddingValues = paddingValues,
                 categories = categories,
                 onCategoryClick = onCategoryClick,
-                onRefresh = viewModel::refresh
+                onRefresh = viewModel::refresh,
+                snackbarHostState = snackbarHostState
             )
         }
     }
@@ -88,12 +99,16 @@ fun HomeScreen (
 private fun HomeContent (
     paddingValues: PaddingValues,
     categories: List<Category>,
+    snackbarHostState: SnackbarHostState,
     onCategoryClick: (Category) -> Unit,
     onRefresh: suspend () -> Unit
 ) {
     PullToRefresh (
         onRefresh = onRefresh,
-        modifier = Modifier.padding(paddingValues)
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(paddingValues),
+        snackbarHostState = snackbarHostState
     ) {
         LazyVerticalGrid (
             columns = GridCells.Fixed(2),

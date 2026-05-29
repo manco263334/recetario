@@ -12,15 +12,17 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DrawerValue
-import androidx.compose.material3.FabPosition
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -50,6 +52,7 @@ fun RecipeScreen (
         viewModel.loadRecipe(recipeId)
     }
 
+    val snackbarHostState = remember { SnackbarHostState() }
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val recipe by viewModel.recipe.collectAsStateWithLifecycle()
 
@@ -74,20 +77,22 @@ fun RecipeScreen (
                     WelcomeHeader(user)
                 }
             },
-            content = { paddingValues ->
-                RecipeContent (
-                    paddingValues = paddingValues,
-                    recipe = recipe,
-                    onRefresh = viewModel::refresh
-                )
-            },
             floatingActionButton = {
                 if (user.isNeitherNullNorAnonymous()) {
                     FAB(onCompleteForm = onCompleteForm)
                 }
             },
-            floatingActionButtonPosition = FabPosition.End
-        )
+            snackbarHost = {
+                SnackbarHost(hostState = snackbarHostState)
+            }
+        ) { paddingValues ->
+            RecipeContent (
+                paddingValues = paddingValues,
+                recipe = recipe,
+                onRefresh = viewModel::refresh,
+                snackbarHostState = snackbarHostState
+            )
+        }
     }
 }
 
@@ -95,11 +100,15 @@ fun RecipeScreen (
 private fun RecipeContent (
     paddingValues: PaddingValues,
     recipe: Recipe?,
+    snackbarHostState: SnackbarHostState,
     onRefresh: suspend () -> Unit
 ) {
     PullToRefresh (
         onRefresh = onRefresh,
-        modifier = Modifier.padding(paddingValues)
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(paddingValues),
+        snackbarHostState = snackbarHostState
     ) {
         Column (
             modifier = Modifier

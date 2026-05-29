@@ -10,16 +10,17 @@ import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.DrawerValue
-import androidx.compose.material3.FabPosition
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -50,6 +51,7 @@ fun CategoryScreen (
         viewModel.loadRecipes(categoryId)
     }
 
+    val snackbarHostState = remember { SnackbarHostState() }
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val recipes by viewModel.recipes.collectAsStateWithLifecycle()
 
@@ -74,21 +76,23 @@ fun CategoryScreen (
                     WelcomeHeader(user)
                 }
             },
-            content = { paddingValues ->
-                CategoryContent (
-                    paddingValues = paddingValues,
-                    recipes = recipes,
-                    onRecipeClick = onRecipeClick,
-                    onRefresh = viewModel::refresh
-                )
-            },
             floatingActionButton = {
                 if (user.isNeitherNullNorAnonymous()) {
                     FAB(onCompleteForm = onCompleteForm)
                 }
             },
-            floatingActionButtonPosition = FabPosition.End
-        )
+            snackbarHost = {
+                SnackbarHost(hostState = snackbarHostState)
+            }
+        ) { paddingValues ->
+            CategoryContent (
+                paddingValues = paddingValues,
+                recipes = recipes,
+                onRecipeClick = onRecipeClick,
+                onRefresh = viewModel::refresh,
+                snackbarHostState = snackbarHostState
+            )
+        }
     }
 }
 
@@ -96,12 +100,16 @@ fun CategoryScreen (
 private fun CategoryContent (
     paddingValues: PaddingValues,
     recipes: List<Recipe>,
+    snackbarHostState: SnackbarHostState,
     onRecipeClick: (Recipe) -> Unit,
     onRefresh: suspend () -> Unit
 ) {
     PullToRefresh (
         onRefresh = onRefresh,
-        modifier = Modifier.padding(paddingValues)
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(paddingValues),
+        snackbarHostState = snackbarHostState
     ) {
         LazyVerticalGrid (
             columns = GridCells.Fixed(2),

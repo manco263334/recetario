@@ -37,7 +37,6 @@ fun FAB (
     var selectedOption by rememberSaveable { mutableStateOf<String?>(null) }
 
     Box (
-        modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.BottomEnd
     ) {
         Column (

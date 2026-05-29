@@ -10,13 +10,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 
 @Composable
 fun CategoryForm (
     onDismiss: () -> Unit,
     onCompleteForm: () -> Unit,
-    viewModel: CategoryFormViewModel = viewModel()
+    viewModel: CategoryFormViewModel = hiltViewModel()
 ) {
     var name by rememberSaveable { mutableStateOf("") }
     var icon by rememberSaveable { mutableStateOf("") }
