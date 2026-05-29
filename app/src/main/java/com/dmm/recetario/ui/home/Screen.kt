@@ -21,12 +21,10 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.dmm.recetario.core.utils.extension.isNeitherNullNorAnonymous
-import com.dmm.recetario.domain.model.AnonymousUser
 import com.dmm.recetario.domain.model.Category
 import com.dmm.recetario.domain.model.User
 import com.dmm.recetario.ui.components.drawer.DrawerContent
@@ -81,7 +79,7 @@ fun HomeScreen (
                 paddingValues = paddingValues,
                 categories = categories,
                 onCategoryClick = onCategoryClick,
-                onRefresh = viewModel::sync
+                onRefresh = viewModel::refresh
             )
         }
     }
@@ -92,7 +90,7 @@ private fun HomeContent (
     paddingValues: PaddingValues,
     categories: List<Category>,
     onCategoryClick: (Category) -> Unit,
-    onRefresh: () -> Unit
+    onRefresh: suspend () -> Unit
 ) {
     PullToRefresh (
         onRefresh = onRefresh,

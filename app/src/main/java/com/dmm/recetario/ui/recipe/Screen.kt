@@ -95,15 +95,15 @@ fun RecipeScreen (
 private fun RecipeContent (
     paddingValues: PaddingValues,
     recipe: Recipe?,
-    onRefresh: () -> Unit
+    onRefresh: suspend () -> Unit
 ) {
     PullToRefresh (
-        onRefresh = onRefresh
+        onRefresh = onRefresh,
+        modifier = Modifier.padding(paddingValues)
     ) {
         Column (
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues)
                 .padding(top = 16.dp)
                 .verticalScroll(rememberScrollState())
         ) {

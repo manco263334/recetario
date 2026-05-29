@@ -40,13 +40,11 @@ class RecipeViewModel @Inject constructor (
         _selectedRecipeId.value = recipeId
     }
 
-    fun refresh() {
-        viewModelScope.launch {
-            val result = recipe.value?.id?.let { recipeService.syncRecipe(it) }
+    suspend fun refresh() {
+        val result = recipe.value?.id?.let { recipeService.syncRecipe(it) }
 
-            if (result == false) {
-                throw Exception("Error sincronizando la receta")
-            }
+        if (result == false) {
+            throw Exception("Error sincronizando la receta")
         }
     }
 }

@@ -97,16 +97,16 @@ private fun CategoryContent (
     paddingValues: PaddingValues,
     recipes: List<Recipe>,
     onRecipeClick: (Recipe) -> Unit,
-    onRefresh: () -> Unit
+    onRefresh: suspend () -> Unit
 ) {
     PullToRefresh (
-        onRefresh = onRefresh
+        onRefresh = onRefresh,
+        modifier = Modifier.padding(paddingValues)
     ) {
         LazyVerticalGrid (
             columns = GridCells.Fixed(2),
             modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues),
+                .fillMaxSize(),
             contentPadding = PaddingValues(16.dp),
             horizontalArrangement = Arrangement.spacedBy(12.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)

@@ -38,15 +38,11 @@ class HomeViewModel @Inject constructor (
         }
     }
 
-    fun refresh() {
-        viewModelScope.launch {
-            val result = categoryService.syncCategories (
-                withRecipes = true
-            )
+    suspend fun refresh() {
+        val result = categoryService.syncCategories(withRecipes = true)
 
-            if (!result) {
-                throw Exception("Error sincronizando las categorías")
-            }
+        if (!result) {
+            throw Exception("Error sincronizando las categorías")
         }
     }
 }
