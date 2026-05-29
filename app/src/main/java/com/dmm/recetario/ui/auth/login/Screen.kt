@@ -26,6 +26,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -55,7 +56,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import com.dmm.recetario.ui.components.CookingLoadingScreen
 import com.dmm.recetario.ui.components.ErrorScreen
 
 @Composable
@@ -93,8 +93,8 @@ private fun LoginContent (
         modifier = Modifier
             .fillMaxSize()
             .background (
-                Brush.verticalGradient(
-                    colors = listOf(
+                Brush.verticalGradient (
+                    colors = listOf (
                         Color(0xFF121212),
                         Color(0xFF1E1E1E),
                         Color(0xFF252525)
@@ -106,7 +106,7 @@ private fun LoginContent (
         verticalArrangement = Arrangement.Center
     ) {
         when (uiState) {
-            is LoginUiState.Loading -> CookingLoadingScreen()
+            is LoginUiState.Loading -> CircularProgressIndicator()
             is LoginUiState.Error -> {
                 ErrorScreen (
                     message = uiState.message,
@@ -143,12 +143,12 @@ private fun LoginForm (
         Card (
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(24.dp),
-            colors = CardDefaults.cardColors(
+            colors = CardDefaults.cardColors (
                 containerColor = Color(0xFF2A2A2A)
             ),
             elevation = CardDefaults.cardElevation(8.dp)
         ) {
-            Column(
+            Column (
                 modifier = Modifier.padding(24.dp)
             ) {
                 Spacer(modifier = Modifier.height(8.dp))
@@ -182,7 +182,9 @@ private fun LoginForm (
                 OutlinedTextField (
                     value = email,
                     onValueChange = { email = it },
-                    label = { Text("Email") },
+                    label = {
+                        Text("Email")
+                    },
                     singleLine = true,
                     keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Email),
                     modifier = Modifier.fillMaxWidth(),
@@ -207,7 +209,9 @@ private fun LoginForm (
                 OutlinedTextField (
                     value = password,
                     onValueChange = { password = it },
-                    label = { Text("Contraseña") },
+                    label = {
+                        Text("Contraseña")
+                    },
                     singleLine = true,
                     keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Password),
                     visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
@@ -285,6 +289,7 @@ private fun LoginForm (
                     shape = RoundedCornerShape(14.dp)
                 ) {
                     Icon(Icons.Default.AccountCircle, null)
+
                     Text("Continuar con Google")
                 }
 
@@ -300,17 +305,4 @@ private fun LoginForm (
             }
         }
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun LoginScreenPreview() {
-    LoginContent (
-        uiState = LoginUiState.Idle,
-        onLogin = { _, _ -> },
-        onRetry = {},
-        onNavigateToHome = {},
-        onNavigateToRegister = {},
-        onLoginAsGuest = {}
-    )
 }

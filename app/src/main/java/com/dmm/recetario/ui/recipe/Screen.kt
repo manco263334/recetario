@@ -107,7 +107,12 @@ private fun RecipeContent (
                 .padding(top = 16.dp)
                 .verticalScroll(rememberScrollState())
         ) {
-            recipe?.let {
+            if (recipe == null) {
+                Text (
+                    text = "Cargando receta...",
+                    style = MaterialTheme.typography.bodyLarge
+                )
+            } else {
                 Card (
                     modifier = Modifier
                         .fillMaxWidth()
@@ -115,12 +120,12 @@ private fun RecipeContent (
                     elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
-                        Text(text = it.name, style = MaterialTheme.typography.headlineMedium)
+                        Text(text = recipe.name, style = MaterialTheme.typography.headlineMedium)
 
                         Spacer(modifier = Modifier.height(8.dp))
-                        Text(text = "Tiempo total: ${it.totalTimeInMinutes} min")
-                        Text(text = "Preparación: ${it.preparationTimeInMinutes} min")
-                        Text(text = "Cocción: ${it.cookingTimeInMinutes} min")
+                        Text(text = "Tiempo total: ${recipe.totalTimeInMinutes} min")
+                        Text(text = "Preparación: ${recipe.preparationTimeInMinutes} min")
+                        Text(text = "Cocción: ${recipe.cookingTimeInMinutes} min")
                     }
                 }
 
@@ -137,9 +142,12 @@ private fun RecipeContent (
                             textAlign = TextAlign.Center,
                             fontWeight = FontWeight.Bold
                         )
+
                         Spacer(modifier = Modifier.height(8.dp))
-                        it.ingredients.forEach { ingredient ->
-                            Text(text = "* ${ingredient["quantity"] ?: "N/A"} de ${ingredient["name"] ?: "N/A"}")
+
+                        recipe.ingredients.forEach { ingredient ->
+                            Text (text = "* ${ingredient["quantity"] ?: "N/A"} de ${ingredient["name"] ?: "N/A"}")
+                            
                             Spacer(modifier = Modifier.height(8.dp))
                         }
                     }
@@ -158,10 +166,13 @@ private fun RecipeContent (
                             fontWeight = FontWeight.Bold,
                             textAlign = TextAlign.Center
                         )
+                        
                         Spacer(modifier = Modifier.height(8.dp))
+                        
                         var index = 0
-                        it.steps.forEach { step ->
-                            Text(text = "${index++}. $step")
+                        
+                        recipe.steps.forEach { step ->
+                            Text(text = "${++index}. $step")
                             Spacer(modifier = Modifier.height(8.dp))
                         }
                     }
@@ -174,11 +185,12 @@ private fun RecipeContent (
                     elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
-                        Text(text = "Calificación: ${it.stars} ⭐", style = MaterialTheme.typography.titleLarge)
+                        Text (
+                            text = "Calificación: ${recipe.stars} ⭐",
+                            style = MaterialTheme.typography.titleLarge
+                        )
                     }
                 }
-            } ?: run {
-                Text(text = "No hay receta disponible", style = MaterialTheme.typography.bodyLarge)
             }
         }
     }

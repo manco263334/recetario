@@ -21,9 +21,9 @@ import kotlin.collections.set
 
 @Composable
 fun RecipeForm (
-    viewModel: RecipeFormViewModel = hiltViewModel(),
     onDismiss: () -> Unit,
-    onCompleteForm: () -> Unit
+    onCompleteForm: () -> Unit,
+    viewModel: RecipeFormViewModel = hiltViewModel()
 ) {
     val categories by viewModel.categories.collectAsStateWithLifecycle()
     var stepIndex by rememberSaveable { mutableIntStateOf(0) }
@@ -43,29 +43,44 @@ fun RecipeForm (
     val categoriesIDS = rememberSaveable { mutableListOf<String>() }
 
     when (stepIndex) {
-        0 -> AlertDialog(
-            onDismissRequest = { onDismiss() },
+        0 -> AlertDialog (
+            onDismissRequest = onDismiss,
             confirmButton = {
                 Button(onClick = { stepIndex = 1 }) {
                     Text("Siguiente")
                 }
             },
             dismissButton = {
-                Button(onClick = { onDismiss() }) {
+                Button(onClick = onDismiss) {
                     Text("Cancelar")
                 }
             },
-            title = { Text("Cancelar receta") },
+            title = { 
+                Text("Cancelar receta") 
+            },
             text = {
                 Column {
-                    OutlinedTextField(value = name, onValueChange = { name = it }, label = { Text("Nombre de la Receta") })
-                    OutlinedTextField(value = persons.toString(), onValueChange = { persons = it.toIntOrNull() ?: 0 }, label = { Text("Personas") })
+                    OutlinedTextField (
+                        value = name, 
+                        onValueChange = { name = it }, 
+                        label = { 
+                            Text("Nombre de la Receta") 
+                        }
+                    )
+                    
+                    OutlinedTextField (
+                        value = persons.toString(), 
+                        onValueChange = { persons = it.toIntOrNull() ?: 0 }, 
+                        label = { 
+                            Text("Personas") 
+                        }
+                    )
                 }
             }
         )
 
-        1 -> AlertDialog(
-            onDismissRequest = { onDismiss() },
+        1 -> AlertDialog (
+            onDismissRequest = onDismiss,
             confirmButton = {
                 Button(onClick = { stepIndex = 2 }) {
                     Text("Siguiente")
@@ -76,24 +91,53 @@ fun RecipeForm (
                     Text("Regresar")
                 }
             },
-            title = { Text("Tiempos estimados") },
+            title = { 
+                Text("Tiempos estimados") 
+            },
             text = {
                 Column {
-                    OutlinedTextField(value = totalTimeInMinutes.toString(), onValueChange = { totalTimeInMinutes = it.toIntOrNull() ?: 0 }, label = { Text("Tiempo total (en minutos)") })
-                    OutlinedTextField(value = cookTimeInMinutes.toString(), onValueChange = { cookTimeInMinutes = it.toIntOrNull() ?: 0 }, label = { Text("Tiempo de cocción (en minutos)") })
-                    OutlinedTextField(value = prepareTimeInMinutes.toString(), onValueChange = { prepareTimeInMinutes = it.toIntOrNull() ?: 0 }, label = { Text("Tiempo de preparación (en minutos)") })
+                    OutlinedTextField (
+                        value = totalTimeInMinutes.toString(), 
+                        onValueChange = { totalTimeInMinutes = it.toIntOrNull() ?: 0 }, 
+                        label = { 
+                            Text("Tiempo total (en minutos)") 
+                        }
+                    )
+                    
+                    OutlinedTextField (
+                        value = cookTimeInMinutes.toString(), 
+                        onValueChange = { cookTimeInMinutes = it.toIntOrNull() ?: 0 }, 
+                        label = { 
+                            Text("Tiempo de cocción (en minutos)") 
+                        }
+                    )
+                    
+                    OutlinedTextField (
+                        value = prepareTimeInMinutes.toString(), 
+                        onValueChange = { prepareTimeInMinutes = it.toIntOrNull() ?: 0 }, 
+                        label = { 
+                            Text("Tiempo de preparación (en minutos)") 
+                        }
+                    )
                 }
             }
         )
 
-        2 -> AlertDialog(
-            onDismissRequest = { onDismiss() },
+        2 -> AlertDialog (
+            onDismissRequest = onDismiss,
             confirmButton = {
-                Button(onClick = {
-                    ingredients.add(mapOf("name" to ingredientName, "quantity" to ingredientQuantity))
-                    ingredientName = ""
-                    ingredientQuantity = ""
-                }) {
+                Button (
+                    onClick = {
+                        ingredients.add (
+                            mapOf (
+                                "name" to ingredientName, 
+                                "quantity" to ingredientQuantity
+                            )
+                        )
+                        ingredientName = ""
+                        ingredientQuantity = ""
+                    }
+                ) {
                     Text("Agregar otro ingrediente")
                 }
             },
@@ -102,67 +146,98 @@ fun RecipeForm (
                     Text("Pasar a pasos")
                 }
             },
-            title = { Text("Agregar Ingredientes") },
+            title = { 
+                Text("Agregar Ingredientes") 
+            },
             text = {
                 Column {
-                    OutlinedTextField(value = ingredientName, onValueChange = { ingredientName = it }, label = { Text("Nombre del Ingrediente") })
-                    OutlinedTextField(value = ingredientQuantity, onValueChange = { ingredientQuantity = it }, label = { Text("Cantidad") })
+                    OutlinedTextField (
+                        value = ingredientName, 
+                        onValueChange = { ingredientName = it }, 
+                        label = { 
+                            Text("Nombre del Ingrediente") 
+                        }
+                    )
+                    
+                    OutlinedTextField (
+                        value = ingredientQuantity, 
+                        onValueChange = { ingredientQuantity = it }, 
+                        label = { 
+                            Text("Cantidad") 
+                        }
+                    )
                 }
             }
         )
 
-        3 -> AlertDialog(
-            onDismissRequest = { onDismiss() },
+        3 -> AlertDialog (
+            onDismissRequest = onDismiss,
             confirmButton = {
-                Button(onClick = {
-                    steps.add(stepDescription)
-                    stepDescription = ""
-                }) {
+                Button (
+                    onClick = {
+                        steps.add(stepDescription)
+                        stepDescription = ""
+                    }
+                ) {
                     Text("Agregar otro paso")
                 }
             },
             dismissButton = {
-                Button(onClick = {
-                    viewModel.addRecipeData (
-                        name = name,
-                        persons = persons,
-                        ingredients = ingredients,
-                        steps = steps,
-                        totalTimeInMinutes = totalTimeInMinutes,
-                        cookingTimeInMinutes = cookTimeInMinutes,
-                        preparationTimeInMinutes = prepareTimeInMinutes
-                    )
-                    stepIndex = 4
-                }) {
+                Button (
+                    onClick = {
+                        viewModel.addRecipeData (
+                            name = name,
+                            persons = persons,
+                            ingredients = ingredients,
+                            steps = steps,
+                            totalTimeInMinutes = totalTimeInMinutes,
+                            cookingTimeInMinutes = cookTimeInMinutes,
+                            preparationTimeInMinutes = prepareTimeInMinutes
+                        )
+                        stepIndex = 4
+                    }
+                ) {
                     Text("Agregar las categorías a las que pertenece")
                 }
             },
-            title = { Text("Agregar Pasos") },
+            title = { 
+                Text("Agregar Pasos") 
+            },
             text = {
                 Column {
-                    OutlinedTextField(value = stepDescription, onValueChange = { stepDescription = it }, label = { Text("Paso") })
+                    OutlinedTextField (
+                        value = stepDescription, 
+                        onValueChange = { stepDescription = it }, 
+                        label = { 
+                            Text("Paso") 
+                        }
+                    )
                 }
             }
         )
 
         4 -> {
-            val checkboxStates = remember { mutableStateMapOf<String, Boolean>().withDefault { false } }
+            val checkboxStates = rememberSaveable { mutableStateMapOf<String, Boolean>().withDefault { false } }
             AlertDialog (
-                onDismissRequest = { onDismiss() },
+                onDismissRequest = onDismiss,
                 confirmButton = {
-                    Button(onClick = {
-                        viewModel.createRecipe(categoriesIDS)
-                        onCompleteForm()
-                    }) {
+                    Button (
+                        onClick = {
+                            viewModel.createRecipe(categoriesIDS)
+                            onCompleteForm()
+                        }
+                    ) {
                         Text("Guardar receta")
                     }
                 },
                 dismissButton = {
-                    Button(onClick = { onDismiss() }) {
+                    Button(onClick = onDismiss) {
                         Text("Cancelar")
                     }
                 },
-                title = { Text("Agregar sus categorías") },
+                title = {
+                    Text("Agregar sus categorías")
+                },
                 text = {
                     Column {
                         categories.forEach { category ->

@@ -7,7 +7,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlin.time.Duration.Companion.seconds
 
 @HiltViewModel
 class RefresherViewModel @Inject constructor(): ViewModel() {
@@ -25,6 +27,9 @@ class RefresherViewModel @Inject constructor(): ViewModel() {
                 RefresherUiState.Success("Elements refreshed successfully")
             } catch (e: Exception) {
                 RefresherUiState.Error("Error while refreshing elements: ${e.message}")
+            } finally {
+                delay(3.seconds)
+                uiState = RefresherUiState.Idle
             }
         }
     }

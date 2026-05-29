@@ -1,6 +1,5 @@
 package com.dmm.recetario.ui.components.refresher
 
-import android.util.Log
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
@@ -23,13 +22,9 @@ fun PullToRefresh (
     val snackbarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(uiState) {
-        Log.d("PullToRefresh", "uiState: $uiState")
-
         if (uiState is RefresherUiState.Error) {
             snackbarHostState.showSnackbar(uiState.message)
-        }
-
-        if (uiState is RefresherUiState.Success) {
+        } else if (uiState is RefresherUiState.Success) {
             snackbarHostState.showSnackbar(uiState.message)
         }
     }

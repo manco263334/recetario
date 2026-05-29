@@ -31,6 +31,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -57,7 +58,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import com.dmm.recetario.ui.components.CookingLoadingScreen
 import com.dmm.recetario.ui.components.ErrorScreen
 
 @Composable
@@ -93,8 +93,8 @@ fun RegisterContent (
         modifier = Modifier
             .fillMaxSize()
             .background(
-                Brush.verticalGradient(
-                    colors = listOf(
+                Brush.verticalGradient (
+                    colors = listOf (
                         Color(0xFF121212),
                         Color(0xFF1E1E1E),
                         Color(0xFF252525)
@@ -106,7 +106,7 @@ fun RegisterContent (
         verticalArrangement = Arrangement.Center
     ) {
         when (uiState) {
-            is RegisterUiState.Loading -> CookingLoadingScreen()
+            is RegisterUiState.Loading -> CircularProgressIndicator()
             is RegisterUiState.Error -> {
                 ErrorScreen (
                     message = uiState.message,
@@ -144,7 +144,7 @@ private fun RegisterForm (
         Card (
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(24.dp),
-            colors = CardDefaults.cardColors(
+            colors = CardDefaults.cardColors (
                 containerColor = Color(0xFF2A2A2A)
             ),
             elevation = CardDefaults.cardElevation(8.dp)
@@ -186,10 +186,10 @@ private fun RegisterForm (
                 Card (
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(28.dp),
-                    colors = CardDefaults.cardColors(
+                    colors = CardDefaults.cardColors (
                         containerColor = Color(0xFF1E1E1E)
                     ),
-                    elevation = CardDefaults.cardElevation(
+                    elevation = CardDefaults.cardElevation (
                         defaultElevation = 10.dp
                     )
                 ) {
@@ -203,7 +203,9 @@ private fun RegisterForm (
                         OutlinedTextField (
                             value = name,
                             onValueChange = { name = it },
-                            label = { Text("Nombre completo") },
+                            label = {
+                                Text("Nombre completo")
+                            },
                             placeholder = {
                                 Text("Juan Pérez")
                             },
@@ -218,14 +220,16 @@ private fun RegisterForm (
                         OutlinedTextField (
                             value = email,
                             onValueChange = { email = it },
-                            label = { Text("Correo electrónico") },
+                            label = {
+                                Text("Correo electrónico")
+                            },
                             placeholder = {
                                 Text("correo@gmail.com")
                             },
                             leadingIcon = {
                                 Icon(Icons.Default.Email, null)
                             },
-                            keyboardOptions = KeyboardOptions(
+                            keyboardOptions = KeyboardOptions (
                                 keyboardType = KeyboardType.Email
                             ),
                             singleLine = true,
@@ -236,7 +240,9 @@ private fun RegisterForm (
                         OutlinedTextField (
                             value = password,
                             onValueChange = { password = it },
-                            label = { Text("Contraseña") },
+                            label = {
+                                Text("Contraseña")
+                            },
                             supportingText = {
                                 Text("Debe contener mínimo 8 caracteres")
                             },
@@ -244,14 +250,12 @@ private fun RegisterForm (
                                 Icon(Icons.Default.Lock, null)
                             },
                             trailingIcon = {
-
                                 IconButton (
                                     onClick = {
                                         passwordVisible =
                                             !passwordVisible
                                     }
                                 ) {
-
                                     Icon(
                                         imageVector =
                                             if(passwordVisible)
@@ -275,7 +279,9 @@ private fun RegisterForm (
                         OutlinedTextField (
                             value = phone,
                             onValueChange = { phone = it },
-                            label = { Text("Teléfono (Opcional)") },
+                            label = {
+                                Text("Teléfono (Opcional)")
+                            },
                             leadingIcon = {
                                 Icon(Icons.Default.Phone, null)
                             },
@@ -290,7 +296,9 @@ private fun RegisterForm (
                         OutlinedTextField (
                             value = username,
                             onValueChange = { username = it },
-                            label = { Text("Apodo (Opcional)") },
+                            label = {
+                                Text("Apodo (Opcional)")
+                            },
                             leadingIcon = {
                                 Icon(Icons.Default.AlternateEmail, null)
                             },
@@ -305,7 +313,7 @@ private fun RegisterForm (
                             onClick = {
                                 keyboardController?.hide()
 
-                                onRegister(
+                                onRegister (
                                     name,
                                     email,
                                     password,
@@ -325,15 +333,14 @@ private fun RegisterForm (
                                 containerColor = Color(0xFF00C2FF)
                             )
                         ) {
-
-                            Icon(
+                            Icon (
                                 Icons.Default.Check,
                                 contentDescription = null
                             )
 
                             Spacer(modifier = Modifier.width(8.dp))
 
-                            Text(
+                            Text (
                                 text = "Crear cuenta",
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 16.sp,
@@ -346,12 +353,11 @@ private fun RegisterForm (
                         )
 
                         // Navegar al login
-                        TextButton(
+                        TextButton (
                             modifier = Modifier.fillMaxWidth(),
                             onClick = onNavigateToLogin
                         ) {
-
-                            Text(
+                            Text (
                                 text = "¿Ya tienes cuenta? Inicia sesión",
                                 color = Color(0xFF00C2FF)
                             )
@@ -361,16 +367,4 @@ private fun RegisterForm (
             }
         }
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun RegisterScreenPreview() {
-    RegisterContent (
-        uiState = RegisterUiState.Idle,
-        onRegister = { _, _, _, _, _ -> },
-        onRetry = {},
-        onNavigateToHome = {},
-        onNavigateToLogin = {}
-    )
 }

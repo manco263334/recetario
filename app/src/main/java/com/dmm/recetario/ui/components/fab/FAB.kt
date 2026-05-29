@@ -17,7 +17,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -29,17 +29,22 @@ import com.dmm.recetario.ui.components.form.recipe.RecipeForm
 
 @Composable
 fun FAB (
-    viewModel: FABViewModel = hiltViewModel(),
-    onCompleteForm: () -> Unit
+    onCompleteForm: () -> Unit,
+    viewModel: FABViewModel = hiltViewModel()
 ) {
     val categories by viewModel.categories.collectAsStateWithLifecycle()
-    var showMenu by remember { mutableStateOf(false) }
-    var selectedOption by remember { mutableStateOf<String?>(null) }
+    var showMenu by rememberSaveable { mutableStateOf(false) }
+    var selectedOption by rememberSaveable { mutableStateOf<String?>(null) }
 
-    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomEnd) {
-        Column(horizontalAlignment = Alignment.End) {
+    Box (
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.BottomEnd
+    ) {
+        Column (
+            horizontalAlignment = Alignment.End
+        ) {
             if (showMenu) {
-                Card(
+                Card (
                     modifier = Modifier.padding(8.dp),
                     shape = RoundedCornerShape(8.dp),
                     elevation = CardDefaults.cardElevation(4.dp)
@@ -51,7 +56,9 @@ fun FAB (
                             style = MaterialTheme.typography.bodyMedium
                         )
                         DropdownMenuItem (
-                            text = { Text("Categoría") },
+                            text = {
+                                Text("Categoría")
+                            },
                             onClick = {
                                 selectedOption = "Category"
                                 showMenu = false
@@ -59,7 +66,9 @@ fun FAB (
                         )
                         if (categories.isNotEmpty()) {
                             DropdownMenuItem (
-                                text = { Text("Receta") },
+                                text = {
+                                    Text("Receta")
+                                },
                                 onClick = {
                                     selectedOption = "Recipe"
                                     showMenu = false

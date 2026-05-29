@@ -69,6 +69,7 @@ class LoginViewModel @Inject constructor (
         viewModelScope.launch {
             val token = ""
             saveTokenToPreferences(token)
+
             uiState = LoginUiState.Success(token)
         }
     }

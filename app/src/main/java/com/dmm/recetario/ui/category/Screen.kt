@@ -123,8 +123,9 @@ private fun CategoryContent (
             items(recipes) { recipe ->
                 WellnessCard (
                     title = recipe.name,
-                    onClick = { recipe.let(onRecipeClick) },
-                    backgroundColor = Color.White
+                    onClick = {
+                        recipe.let(onRecipeClick)
+                    }
                 )
             }
         }

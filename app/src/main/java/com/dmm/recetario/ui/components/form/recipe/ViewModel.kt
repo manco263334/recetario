@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.dmm.recetario.core.utils.extension.isNotNull
 import com.dmm.recetario.data.service.CategoryService
 import com.dmm.recetario.data.service.RecipeService
 import com.dmm.recetario.domain.model.Recipe
@@ -12,6 +13,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 
 @HiltViewModel
 class RecipeFormViewModel @Inject constructor (
@@ -55,8 +57,12 @@ class RecipeFormViewModel @Inject constructor (
     }
 
     fun createRecipe(categories: List<String>) {
-        assert(recipe != null)
+        viewModelScope.launch {
+            assert(recipe.isNotNull())
 
-        recipe!!.categories = categories
+            recipe!!.categories = categories
+
+            recipeService.createRecipe(recipe!!)
+        }
     }
 }

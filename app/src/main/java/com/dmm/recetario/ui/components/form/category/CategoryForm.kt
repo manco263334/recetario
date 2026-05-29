@@ -14,29 +14,33 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 
 @Composable
 fun CategoryForm (
-    viewModel: CategoryFormViewModel = viewModel(),
     onDismiss: () -> Unit,
-    onCompleteForm: () -> Unit
+    onCompleteForm: () -> Unit,
+    viewModel: CategoryFormViewModel = viewModel()
 ) {
     var name by rememberSaveable { mutableStateOf("") }
     var icon by rememberSaveable { mutableStateOf("") }
 
     AlertDialog (
-        onDismissRequest = { onDismiss() },
+        onDismissRequest = onDismiss,
         confirmButton = {
-            Button(onClick = {
-                viewModel.createCategory(name = name, icon = icon.ifBlank { null })
-                onCompleteForm()
-            }) {
+            Button (
+                onClick = {
+                    viewModel.createCategory(name = name, icon = icon.ifBlank { null })
+                    onCompleteForm()
+                }
+            ) {
                 Text("Crear")
             }
         },
         dismissButton = {
-            Button(onClick = { onDismiss() }) {
+            Button(onClick = onDismiss) {
                 Text("Cancelar")
             }
         },
-        title = { Text("Agregar categoría") },
+        title = {
+            Text("Agregar categoría")
+        },
         text = {
             Column {
                 OutlinedTextField (

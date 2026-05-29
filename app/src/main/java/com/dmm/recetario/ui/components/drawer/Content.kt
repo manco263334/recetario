@@ -41,12 +41,12 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun DrawerContent (
-    viewModel: DrawerViewModel = hiltViewModel(),
     scaffoldState: DrawerState,
     user: User?,
     onSettingsClick: (user: User?) -> Unit,
     onLogOutSuccess: () -> Unit,
-    onHomeClick: () -> Unit
+    onHomeClick: () -> Unit,
+    viewModel: DrawerViewModel = hiltViewModel()
 ) {
     val coroutineScope = rememberCoroutineScope()
     val logOutSuccessful = viewModel.logOutSuccessful
@@ -60,7 +60,7 @@ fun DrawerContent (
     Column (
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.onSurface)
+            .background(MaterialTheme.colorScheme.background)
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
@@ -69,7 +69,13 @@ fun DrawerContent (
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.End
         ) {
-            IconButton(onClick = { coroutineScope.launch { scaffoldState.close() } }) {
+            IconButton (
+                onClick = {
+                    coroutineScope.launch {
+                        scaffoldState.close()
+                    }
+                }
+            ) {
                 Icon(imageVector = Icons.Default.Close, contentDescription = "Cerrar menú")
             }
         }
@@ -82,7 +88,7 @@ fun DrawerContent (
             modifier = Modifier
                 .size(80.dp)
                 .clip(CircleShape)
-                .border(
+                .border (
                     2.dp,
                     Color(0xFF00C2FF),
                     CircleShape
@@ -93,27 +99,35 @@ fun DrawerContent (
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        Column(
+        Column (
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text (
                 text = user?.name ?: "Anónimo",
-                fontSize = 20.sp, textAlign = TextAlign.Center
+                fontSize = 20.sp,
+                textAlign = TextAlign.Center,
+                color = MaterialTheme.colorScheme.onBackground
             )
 
             Text (
                 text = user?.email ?: "Sin email",
-                fontSize = 16.sp, color = Color.Gray, textAlign = TextAlign.Center
+                fontSize = 16.sp,
+                color = MaterialTheme.colorScheme.onBackground,
+                textAlign = TextAlign.Center
             )
 
             Text (
                 text = user?.username ?: "Sin apodo",
-                fontSize = 14.sp, color = Color.Gray
+                fontSize = 14.sp,
+                color = MaterialTheme.colorScheme.onBackground,
+                textAlign = TextAlign.Center
             )
 
             Text (
                 text = if (user?.phone.isNullOrBlank()) "Sin número telefónico" else user.phone,
-                fontSize = 14.sp, color = Color.Gray
+                fontSize = 14.sp,
+                color = MaterialTheme.colorScheme.onBackground,
+                textAlign = TextAlign.Center
             )
         }
 
@@ -130,8 +144,6 @@ fun DrawerContent (
             },
             shape = RoundedCornerShape(16.dp)
         )
-
-        Spacer(modifier = Modifier.height(16.dp))
 
         NavigationDrawerItem (
             label = {

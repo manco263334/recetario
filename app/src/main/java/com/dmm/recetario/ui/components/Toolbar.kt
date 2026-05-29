@@ -10,6 +10,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -19,18 +20,29 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Toolbar (
-    modifier: Modifier = Modifier,
     scaffoldState: DrawerState,
+    modifier: Modifier = Modifier,
     title: @Composable () -> Unit
 ) {
     val coroutineScope = rememberCoroutineScope()
+
+    LaunchedEffect(Unit) {
+        scaffoldState.close()
+    }
+
     TopAppBar (
         title = title,
         modifier = modifier
             .background(PurpleGrey40)
             .padding(16.dp),
         navigationIcon = {
-            IconButton(onClick = { coroutineScope.launch { scaffoldState.open() } }) {
+            IconButton (
+                onClick = {
+                    coroutineScope.launch {
+                        scaffoldState.open()
+                    }
+                }
+            ) {
                 Icon(imageVector = Icons.Default.Menu, contentDescription = "Abrir menú")
             }
         }

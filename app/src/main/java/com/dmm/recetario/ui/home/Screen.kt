@@ -10,7 +10,6 @@ import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.DrawerValue
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -115,8 +114,7 @@ private fun HomeContent (
             items(categories) { category ->
                 WellnessCard (
                     title = category.name,
-                    onClick = { onCategoryClick(category) },
-                    backgroundColor = MaterialTheme.colorScheme.onBackground
+                    onClick = { onCategoryClick(category) }
                 )
             }
         }

@@ -2,7 +2,6 @@ package com.dmm.recetario.ui.components
 
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -37,17 +36,16 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
-import coil.compose.rememberAsyncImagePainter
 
 @Composable
 fun WellnessCard (
     modifier: Modifier = Modifier,
     title: String,
-    titleColor: Color = MaterialTheme.colorScheme.surface,
+    titleColor: Color = MaterialTheme.colorScheme.onSurface,
     description: String? = null,
     image: String? = null,
     imageDescription: String? = null,
-    backgroundColor: Color = Color(0xFFFFFFFF),
+    backgroundColor: Color = MaterialTheme.colorScheme.surface,
     imagePosition: ImagePosition = ImagePosition.TOP,
     onClick: () -> Unit = {}
 ) {
