@@ -2,7 +2,7 @@ package com.dmm.recetario.ui.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.dmm.recetario.data.service.CategoryService
+import com.dmm.recetario.domain.service.CategoryService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
 import kotlinx.coroutines.flow.SharingStarted
@@ -14,7 +14,7 @@ class HomeViewModel @Inject constructor (
     private val categoryService: CategoryService
 ): ViewModel() {
     val categories = categoryService
-        .getAllCategories()
+        .getAllCategories(1, 10, false)
         .stateIn (
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
@@ -31,15 +31,15 @@ class HomeViewModel @Inject constructor (
     ) {
         viewModelScope.launch {
             categoryService.syncCategories (
-                page = page,
-                size = size,
+                page,
+                size,
                 withRecipes = true
             )
         }
     }
 
-    suspend fun refresh() {
-        val result = categoryService.syncCategories(withRecipes = true)
+    suspend fun refresh () {
+        val result = categoryService.syncCategories(1, 10, withRecipes = true)
 
         if (!result) {
             throw Exception("Error sincronizando las categorías")

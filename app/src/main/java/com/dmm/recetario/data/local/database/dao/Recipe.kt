@@ -11,7 +11,7 @@ import com.dmm.recetario.data.local.database.entity.UserEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao
-interface RecipeDAO {
+interface RecipeDao {
     @Transaction
     @Query("SELECT * FROM recipes")
     fun getRecipes(): Flow<List<RecipeEntity>>
@@ -27,6 +27,9 @@ interface RecipeDAO {
 
     @Upsert
     suspend fun insertReferences(refs: List<RecipeCategoryCrossRef>)
+
+    @Upsert
+    suspend fun insertReference(ref: RecipeCategoryCrossRef)
 
     @Query("DELETE FROM recipes")
     suspend fun clear()

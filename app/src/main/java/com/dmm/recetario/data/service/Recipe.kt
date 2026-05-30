@@ -2,40 +2,41 @@ package com.dmm.recetario.data.service
 
 import android.util.Log
 import com.dmm.recetario.core.utils.extension.isNotNull
-import com.dmm.recetario.core.utils.handler.APIException
+import com.dmm.recetario.domain.exceptions.APIException
 import com.dmm.recetario.core.utils.mapper.toDomain
 import com.dmm.recetario.core.utils.mapper.toEntity
-import com.dmm.recetario.data.local.database.dao.RecipeDAO
+import com.dmm.recetario.data.local.database.dao.RecipeDao
 import com.dmm.recetario.data.local.database.entity.RecipeCategoryCrossRef
-import com.dmm.recetario.data.repository.RecipeRepository
 import com.dmm.recetario.domain.model.Recipe
+import com.dmm.recetario.domain.repository.RecipeRepository
+import com.dmm.recetario.domain.service.RecipeService
 import com.dmm.recetario.domain.use_cases.recipe.CreateRecipeUseCase
 import com.dmm.recetario.domain.use_cases.recipe.DeleteRecipeUseCase
 import com.dmm.recetario.domain.use_cases.recipe.UpdateRecipeUseCase
-import jakarta.inject.Inject
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.withContext
 
-class RecipeService @Inject constructor (
+class RecipeServiceImp (
     private val createRecipeUseCase: CreateRecipeUseCase,
     private val updateRecipeUseCase: UpdateRecipeUseCase,
     private val deleteRecipeUseCase: DeleteRecipeUseCase,
     private val repository: RecipeRepository,
-    private val dao: RecipeDAO
-) {
-    suspend fun createRecipe(data: Recipe): Recipe {
-        return withContext(Dispatchers.IO) {
-            val recipe = createRecipeUseCase(data, this)
+    private val dao: RecipeDao
+): RecipeService {
+    override suspend fun createRecipe(data: Recipe): Recipe {
+        val recipe = createRecipeUseCase(data)
 
-            assert(recipe.isNotNull())
+        assert(recipe.isNotNull())
 
-            recipe!!
-        }
+        return recipe!!
     }
 
-    fun getAllRecipes(): Flow<List<Recipe>> {
+    override fun getAllRecipes (
+        page: Int,
+        size: Int,
+        withCategories: Boolean?,
+        withCreator: Boolean?
+    ): Flow<List<Recipe>> {
         return dao.getRecipes().map { recipes ->
             recipes.map { recipe ->
                 recipe.toDomain()
@@ -43,11 +44,11 @@ class RecipeService @Inject constructor (
         }
     }
 
-    suspend fun syncRecipes (
-        page: Int = 0,
-        size: Int = 10,
-        withCategories: Boolean? = null,
-        withCreator: Boolean? = null
+    override suspend fun syncRecipes (
+        page: Int,
+        size: Int,
+        withCategories: Boolean?,
+        withCreator: Boolean?
     ): Boolean {
         return try {
             val recipes = repository.getAllRecipes (
@@ -74,9 +75,13 @@ class RecipeService @Inject constructor (
         }
     }
 
-    suspend fun syncRecipe(id: String): Boolean {
+    override suspend fun syncRecipe (
+        id: String,
+        withCategories: Boolean?,
+        withCreator: Boolean?
+    ): Boolean {
         return try {
-            val recipe = repository.getRecipe(id)
+            val recipe = repository.getRecipe(id, withCategories, withCreator)
 
             dao.saveRecipe(recipe.toEntity())
             true
@@ -86,28 +91,24 @@ class RecipeService @Inject constructor (
         }
     }
 
-    fun getRecipe(id: String): Flow<Recipe?> {
+    override fun getRecipe(id: String): Flow<Recipe?> {
         return dao.getRecipe(id).map { recipe ->
             recipe?.toDomain()
         }
     }
 
-    suspend fun updateRecipe (
+    override suspend fun updateRecipe (
         id: String,
         data: Recipe
     ): Recipe {
-        return withContext(Dispatchers.IO) {
-            val recipe = updateRecipeUseCase(id, data, this)
+        val recipe = updateRecipeUseCase(id, data)
 
-            assert(recipe.isNotNull())
+        assert(recipe.isNotNull())
 
-            recipe!!
-        }
+        return recipe!!
     }
 
-    suspend fun deleteRecipe(id: String) {
-        return withContext(Dispatchers.IO) {
-            assert(deleteRecipeUseCase(id, this))
-        }
+    override suspend fun deleteRecipe(id: String) {
+        assert(deleteRecipeUseCase(id))
     }
 }

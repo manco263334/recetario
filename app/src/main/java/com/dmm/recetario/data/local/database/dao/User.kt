@@ -10,7 +10,7 @@ import com.dmm.recetario.data.local.database.entity.UserEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao
-interface UserDAO {
+interface UserDao {
     @Query("SELECT * FROM users")
     fun getUsers(): Flow<List<UserEntity>>
 
@@ -32,10 +32,16 @@ interface UserDAO {
     fun getUserByToken(token: String): Flow<UserEntity?>
 
     @Upsert
-    suspend fun insertTokenRefs(references: List<TokenUserRef>)
+    suspend fun insertTokenRefs(refs: List<TokenUserRef>)
+
+    @Upsert
+    suspend fun insertTokenRef(ref: TokenUserRef)
 
     @Upsert
     suspend fun saveUsers(users: List<UserEntity>)
+
+    @Upsert
+    suspend fun saveUser(user: UserEntity)
 
     @Query("DELETE FROM users")
     suspend fun clear()

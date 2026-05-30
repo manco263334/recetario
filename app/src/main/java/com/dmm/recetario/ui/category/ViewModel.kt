@@ -2,9 +2,9 @@ package com.dmm.recetario.ui.category
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.dmm.recetario.data.service.CategoryService
-import com.dmm.recetario.data.service.RecipeService
 import com.dmm.recetario.domain.model.Recipe
+import com.dmm.recetario.domain.service.CategoryService
+import com.dmm.recetario.domain.service.RecipeService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -55,15 +55,16 @@ class CategoryViewModel @Inject constructor (
             recipeService.syncRecipes (
                 page = page,
                 size = size,
-                withCategories = true
+                withCategories = true,
+                withCreator = false
             )
-            categoryService.syncCategories(withRecipes = true)
+            categoryService.syncCategories(page, size, withRecipes = true)
         }
     }
 
     suspend fun refresh() {
         val results = recipes.value.map { recipe ->
-            recipeService.syncRecipe(recipe.id)
+            recipeService.syncRecipe(recipe.id, false, false)
         }
 
         if (results.any { !it }) {

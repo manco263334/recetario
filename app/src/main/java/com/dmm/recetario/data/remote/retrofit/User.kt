@@ -12,18 +12,18 @@ import retrofit2.http.PUT
 import retrofit2.http.Path
 import retrofit2.http.Query
 
-interface APIUserService {
+interface UserRemote {
     @GET("users")
     suspend fun getAllUsers (
-        @Query("page") page: Int = 0,
-        @Query("size") size: Int = 10,
-        @Query("withRecipes") withRecipes: Boolean? = null
+        @Query("page") page: Int,
+        @Query("size") size: Int,
+        @Query("withRecipes") withRecipes: Boolean?
     ): Response<PageResponse<UserDTO>>
 
     @GET("users/{id}")
     suspend fun getUser (
         @Path("id") id: String,
-        @Query("withRecipes") withRecipes: Boolean? = null
+        @Query("withRecipes") withRecipes: Boolean?
     ): Response<UserDTO>
 
     @PUT("users/{id}")

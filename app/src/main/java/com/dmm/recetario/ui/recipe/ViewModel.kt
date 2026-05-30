@@ -2,8 +2,8 @@ package com.dmm.recetario.ui.recipe
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.dmm.recetario.data.service.RecipeService
 import com.dmm.recetario.domain.model.Recipe
+import com.dmm.recetario.domain.service.RecipeService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -13,7 +13,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.launch
 
 @HiltViewModel
 class RecipeViewModel @Inject constructor (
@@ -41,7 +40,7 @@ class RecipeViewModel @Inject constructor (
     }
 
     suspend fun refresh() {
-        val result = recipe.value?.id?.let { recipeService.syncRecipe(it) }
+        val result = recipe.value?.id?.let { recipeService.syncRecipe(it, false, false) }
 
         if (result == false) {
             throw Exception("Error sincronizando la receta")

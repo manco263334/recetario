@@ -3,17 +3,17 @@ package com.dmm.recetario.core.utils.extension
 import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
 
-fun NavBackStack<NavKey>.navigateTo(screen: NavKey): Boolean {
+fun <T: NavKey> NavBackStack<T>.navigateTo(screen: T): Boolean {
     return this.add(screen)
 }
 
-fun NavBackStack<NavKey>.back(): NavKey? {
+fun <T: NavKey> NavBackStack<T>.back(): T? {
     if (this.isEmpty()) return null
 
     return this.removeLastOrNull()
 }
 
-fun NavBackStack<NavKey>.backTo(targetScreen: NavKey) {
+fun <T: NavKey> NavBackStack<T>.backTo(targetScreen: T) {
     if (this.isEmpty()) return
 
     if (targetScreen !in this) return

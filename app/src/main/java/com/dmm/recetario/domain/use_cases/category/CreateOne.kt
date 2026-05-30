@@ -2,20 +2,18 @@ package com.dmm.recetario.domain.use_cases.category
 
 import android.util.Log
 import com.dmm.recetario.core.utils.extension.isNotNull
-import com.dmm.recetario.core.utils.handler.APIException
+import com.dmm.recetario.domain.exceptions.APIException
 import com.dmm.recetario.core.utils.mapper.toEntity
-import com.dmm.recetario.data.local.database.dao.CategoryDAO
-import com.dmm.recetario.data.repository.CategoryRepository
+import com.dmm.recetario.data.local.database.dao.CategoryDao
 import com.dmm.recetario.domain.model.Category
+import com.dmm.recetario.domain.repository.CategoryRepository
 import jakarta.inject.Inject
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 
-class CreateCategoryUseCase @Inject constructor (
+open class CreateCategoryUseCase @Inject constructor (
     private val repository: CategoryRepository,
-    private val dao: CategoryDAO
+    private val dao: CategoryDao
 ) {
-    suspend operator fun invoke(data: Category, scope: CoroutineScope): Category? {
+    suspend operator fun invoke(data: Category): Category? {
         var category: Category?
 
         try {
@@ -26,9 +24,7 @@ class CreateCategoryUseCase @Inject constructor (
         }
 
         if (category.isNotNull()) {
-            scope.launch {
-                dao.saveCategories(listOf(category.toEntity()))
-            }
+            dao.saveCategories(listOf(category.toEntity()))
         }
 
         return category

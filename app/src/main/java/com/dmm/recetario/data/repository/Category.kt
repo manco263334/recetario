@@ -3,28 +3,29 @@ package com.dmm.recetario.data.repository
 import com.dmm.recetario.core.utils.extension.isNotNull
 import com.dmm.recetario.core.utils.handler.handleApiCall
 import com.dmm.recetario.core.utils.mapper.toDomain
-import com.dmm.recetario.data.remote.retrofit.APICategoryService
+import com.dmm.recetario.data.remote.retrofit.CategoryRemote
 import com.dmm.recetario.domain.model.Category
+import com.dmm.recetario.domain.repository.CategoryRepository
 import jakarta.inject.Inject
 
-class CategoryRepository @Inject constructor (
-    private val apiCategoryService: APICategoryService
-) {
-    suspend fun createCategory(data: Category): Category {
-        val category = handleApiCall { apiCategoryService.createCategory(data) }
+class CategoryRepositoryImp (
+    private val remote: CategoryRemote
+): CategoryRepository {
+    override suspend fun createCategory(data: Category): Category {
+        val category = handleApiCall { remote.createCategory(data) }
 
         assert(category.isNotNull())
 
         return category!!.toDomain()
     }
 
-    suspend fun getAllCategories (
-        page: Int = 0,
-        size: Int = 10,
-        withRecipes: Boolean? = null
+    override suspend fun getAllCategories (
+        page: Int,
+        size: Int,
+        withRecipes: Boolean?
     ): List<Category> {
         val categories = handleApiCall {
-            apiCategoryService.getAllCategories (
+            remote.getAllCategories (
                 page = page,
                 size = size,
                 withRecipes = withRecipes
@@ -34,12 +35,12 @@ class CategoryRepository @Inject constructor (
         return categories?.content?.map { it.toDomain() } ?: emptyList()
     }
 
-    suspend fun getCategory (
+    override suspend fun getCategory (
         id: String,
-        withRecipes: Boolean? = null
+        withRecipes: Boolean?
     ): Category {
         val category = handleApiCall {
-            apiCategoryService.getCategory (
+            remote.getCategory (
                 id = id,
                 withRecipes = withRecipes
             )
@@ -50,18 +51,18 @@ class CategoryRepository @Inject constructor (
         return category!!.toDomain()
     }
 
-    suspend fun updateCategory (
+    override suspend fun updateCategory (
         id: String,
         data: Category
     ): Category {
-        val category = handleApiCall { apiCategoryService.updateCategory(id, data) }
+        val category = handleApiCall { remote.updateCategory(id, data) }
 
         assert(category.isNotNull())
 
         return category!!.toDomain()
     }
 
-    suspend fun deleteCategory(id: String) {
-        handleApiCall { apiCategoryService.deleteCategory(id) }
+    override suspend fun deleteCategory(id: String) {
+        handleApiCall { remote.deleteCategory(id) }
     }
 }

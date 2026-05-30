@@ -4,11 +4,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dmm.recetario.data.local.TokenManager
 import com.dmm.recetario.data.local.UserManager
-import com.dmm.recetario.data.service.CategoryService
-import com.dmm.recetario.data.service.RecipeService
-import com.dmm.recetario.data.service.UserService
 import com.dmm.recetario.domain.model.AnonymousUser
 import com.dmm.recetario.domain.model.User
+import com.dmm.recetario.domain.service.CategoryService
+import com.dmm.recetario.domain.service.RecipeService
+import com.dmm.recetario.domain.service.UserService
 import com.dmm.recetario.navigation.Routes
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
@@ -72,9 +72,9 @@ class MainViewModel @Inject constructor (
         viewModelScope.launch {
             awaitAll (
                 async { userManager.syncUser() },
-                async { userService.syncUsers() },
-                async { recipeService.syncRecipes(withCategories = true) },
-                async { categoryService.syncCategories(withRecipes = true) }
+                async { userService.syncUsers(1, 10, false) },
+                async { recipeService.syncRecipes(1, 10, true, false) },
+                async { categoryService.syncCategories(1, 10, true) }
             )
         }
     }

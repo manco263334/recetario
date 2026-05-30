@@ -2,8 +2,8 @@ package com.dmm.recetario.ui.components.form.category
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.dmm.recetario.data.service.CategoryService
 import com.dmm.recetario.domain.model.Category
+import com.dmm.recetario.domain.service.CategoryService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
 import kotlinx.coroutines.launch

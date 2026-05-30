@@ -12,23 +12,23 @@ import retrofit2.http.PUT
 import retrofit2.http.Path
 import retrofit2.http.Query
 
-interface APIRecipeService {
+interface RecipeRemote {
     @POST("recipes")
     suspend fun createRecipe(@Body data: Recipe): Response<RecipeDTO>
 
     @GET("recipes")
     suspend fun getAllRecipes (
-        @Query("page") page: Int = 0,
-        @Query("size") size: Int = 10,
-        @Query("withCategories") withCategories: Boolean? = null,
-        @Query("withCreator") withCreator: Boolean? = null
+        @Query("page") page: Int,
+        @Query("size") size: Int,
+        @Query("withCategories") withCategories: Boolean?,
+        @Query("withCreator") withCreator: Boolean?
     ): Response<PageResponse<RecipeDTO>>
 
     @GET("recipes/{id}")
     suspend fun getRecipe (
         @Path("id") id: String,
-        @Query("withCategories") withCategories: Boolean? = null,
-        @Query("withCreator") withCreator: Boolean? = null
+        @Query("withCategories") withCategories: Boolean?,
+        @Query("withCreator") withCreator: Boolean?
     ): Response<RecipeDTO>
 
     @PUT("recipes/{id}")

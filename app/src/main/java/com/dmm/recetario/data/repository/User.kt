@@ -3,20 +3,21 @@ package com.dmm.recetario.data.repository
 import com.dmm.recetario.core.utils.extension.isNotNull
 import com.dmm.recetario.core.utils.handler.handleApiCall
 import com.dmm.recetario.core.utils.mapper.toDomain
-import com.dmm.recetario.data.remote.retrofit.APIUserService
+import com.dmm.recetario.data.remote.retrofit.UserRemote
 import com.dmm.recetario.domain.model.User
+import com.dmm.recetario.domain.repository.UserRepository
 import jakarta.inject.Inject
 
-class UserRepository @Inject constructor (
-    private val apiUserService: APIUserService
-) {
-    suspend fun getAllUsers (
-        page: Int = 0,
-        size: Int = 10,
-        withRecipes: Boolean? = null
+class UserRepositoryImp (
+    private val remote: UserRemote
+): UserRepository {
+    override suspend fun getAllUsers (
+        page: Int,
+        size: Int,
+        withRecipes: Boolean?
     ): List<User> {
         val users = handleApiCall {
-            apiUserService.getAllUsers (
+            remote.getAllUsers (
                 page = page,
                 size = size,
                 withRecipes = withRecipes
@@ -26,12 +27,12 @@ class UserRepository @Inject constructor (
         return users?.content?.map { it.toDomain() } ?: emptyList()
     }
 
-    suspend fun getUser (
+    override suspend fun getUser (
         id: String,
-        withRecipes: Boolean? = null
+        withRecipes: Boolean?
     ): User {
         val user = handleApiCall {
-            apiUserService.getUser (
+            remote.getUser (
                 id = id,
                 withRecipes = withRecipes
             )
@@ -42,18 +43,18 @@ class UserRepository @Inject constructor (
         return user!!.toDomain()
     }
 
-    suspend fun updateUser (
+    override suspend fun updateUser (
         id: String,
         data: User
     ): User {
-        val user = handleApiCall { apiUserService.updateUser(id, data) }
+        val user = handleApiCall { remote.updateUser(id, data) }
 
         assert(user.isNotNull())
 
         return user!!.toDomain()
     }
 
-    suspend fun deleteUser(id: String) {
-        handleApiCall { apiUserService.deleteUser(id) }
+    override suspend fun deleteUser(id: String) {
+        handleApiCall { remote.deleteUser(id) }
     }
 }

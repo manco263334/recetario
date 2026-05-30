@@ -1,6 +1,5 @@
 package com.dmm.recetario.data.remote.retrofit
 
-import com.dmm.recetario.domain.repository.AuthRepository
 import com.dmm.recetario.domain.repository.LoginData
 import com.dmm.recetario.domain.repository.LoginResponse
 import com.dmm.recetario.domain.repository.MeResponse
@@ -10,16 +9,16 @@ import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
 
-interface APIAuthService: AuthRepository {
+interface AuthRemote {
     @POST("auth/login")
-    override suspend fun login(@Body data: LoginData): Response<LoginResponse>
+    suspend fun login(@Body data: LoginData): Response<LoginResponse>
 
     @POST("auth/register")
-    override suspend fun register(@Body data: RegisterData): Response<LoginResponse>
+    suspend fun register(@Body data: RegisterData): Response<LoginResponse>
 
     @POST("auth/logout")
-    override suspend fun logout(): Response<Unit>
+    suspend fun logout(): Response<Unit>
 
     @GET("auth/me")
-    override suspend fun me(): Response<MeResponse>
+    suspend fun me(): Response<MeResponse>
 }

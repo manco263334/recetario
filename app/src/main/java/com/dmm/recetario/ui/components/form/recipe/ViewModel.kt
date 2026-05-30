@@ -6,9 +6,9 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dmm.recetario.core.utils.extension.isNotNull
-import com.dmm.recetario.data.service.CategoryService
-import com.dmm.recetario.data.service.RecipeService
 import com.dmm.recetario.domain.model.Recipe
+import com.dmm.recetario.domain.service.CategoryService
+import com.dmm.recetario.domain.service.RecipeService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
 import kotlinx.coroutines.flow.SharingStarted
@@ -21,7 +21,7 @@ class RecipeFormViewModel @Inject constructor (
     private val recipeService: RecipeService
 ): ViewModel() {
     val categories = categoryService
-        .getAllCategories()
+        .getAllCategories(1, 10 ,false)
         .stateIn (
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),

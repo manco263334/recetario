@@ -10,7 +10,7 @@ import com.dmm.recetario.data.local.database.entity.RecipeEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao
-interface CategoryDAO {
+interface CategoryDao {
     @Query("SELECT * FROM categories")
     fun getCategories(): Flow<List<CategoryEntity>>
 
@@ -21,7 +21,13 @@ interface CategoryDAO {
     suspend fun saveCategories(categories: List<CategoryEntity>)
 
     @Upsert
+    suspend fun saveCategory(category: CategoryEntity)
+
+    @Upsert
     suspend fun insertReferences(refs: List<RecipeCategoryCrossRef>)
+
+    @Upsert
+    suspend fun insertReference(ref: RecipeCategoryCrossRef)
 
     @Query("DELETE FROM categories")
     suspend fun clear()

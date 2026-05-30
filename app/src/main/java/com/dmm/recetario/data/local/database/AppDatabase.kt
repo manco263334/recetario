@@ -3,9 +3,9 @@ package com.dmm.recetario.data.local.database
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
-import com.dmm.recetario.data.local.database.dao.CategoryDAO
-import com.dmm.recetario.data.local.database.dao.RecipeDAO
-import com.dmm.recetario.data.local.database.dao.UserDAO
+import com.dmm.recetario.data.local.database.dao.CategoryDao
+import com.dmm.recetario.data.local.database.dao.RecipeDao
+import com.dmm.recetario.data.local.database.dao.UserDao
 import com.dmm.recetario.data.local.database.entity.CategoryEntity
 import com.dmm.recetario.data.local.database.entity.RecipeCategoryCrossRef
 import com.dmm.recetario.data.local.database.entity.RecipeEntity
@@ -20,14 +20,14 @@ import com.dmm.recetario.data.local.database.entity.UserEntity
         RecipeCategoryCrossRef::class,
         TokenUserRef::class
     ],
-    version = 4,
+    version = 5,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
 abstract class AppDatabase: RoomDatabase() {
-    abstract fun recipeDao(): RecipeDAO
+    abstract fun recipeDao(): RecipeDao
 
-    abstract fun categoryDao(): CategoryDAO
+    abstract fun categoryDao(): CategoryDao
 
-    abstract fun userDao(): UserDAO
+    abstract fun userDao(): UserDao
 }

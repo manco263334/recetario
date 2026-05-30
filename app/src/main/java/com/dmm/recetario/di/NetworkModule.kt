@@ -1,11 +1,10 @@
 package com.dmm.recetario.di
 
 import com.dmm.recetario.data.remote.interceptor.AuthInterceptor
-import com.dmm.recetario.data.remote.retrofit.APIAuthService
-import com.dmm.recetario.data.remote.retrofit.APICategoryService
-import com.dmm.recetario.data.remote.retrofit.APIRecipeService
-import com.dmm.recetario.data.remote.retrofit.APIUserService
-import com.dmm.recetario.domain.repository.AuthRepository
+import com.dmm.recetario.data.remote.retrofit.AuthRemote
+import com.dmm.recetario.data.remote.retrofit.CategoryRemote
+import com.dmm.recetario.data.remote.retrofit.RecipeRemote
+import com.dmm.recetario.data.remote.retrofit.UserRemote
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -45,31 +44,25 @@ object NetworkModule {
 
     @Singleton
     @Provides
-    fun provideAuthService(retrofit: Retrofit): APIAuthService {
-        return retrofit.create(APIAuthService::class.java)
+    fun provideAuthRemote(retrofit: Retrofit): AuthRemote {
+        return retrofit.create(AuthRemote::class.java)
     }
 
     @Singleton
     @Provides
-    fun provideAuthRepository(retrofit: Retrofit): AuthRepository {
-        return retrofit.create(AuthRepository::class.java)
+    fun provideUserRemote(retrofit: Retrofit): UserRemote {
+        return retrofit.create(UserRemote::class.java)
     }
 
     @Singleton
     @Provides
-    fun provideUserService(retrofit: Retrofit): APIUserService {
-        return retrofit.create(APIUserService::class.java)
+    fun provideCategoryRemote(retrofit: Retrofit): CategoryRemote {
+        return retrofit.create(CategoryRemote::class.java)
     }
 
     @Singleton
     @Provides
-    fun provideCategoryService(retrofit: Retrofit): APICategoryService {
-        return retrofit.create(APICategoryService::class.java)
-    }
-
-    @Singleton
-    @Provides
-    fun provideRecipeService(retrofit: Retrofit): APIRecipeService {
-        return retrofit.create(APIRecipeService::class.java)
+    fun provideRecipeRemote(retrofit: Retrofit): RecipeRemote {
+        return retrofit.create(RecipeRemote::class.java)
     }
 }

@@ -4,9 +4,9 @@ import android.content.Context
 import androidx.room.Room
 import com.dmm.recetario.data.local.database.AppDatabase
 import com.dmm.recetario.data.local.database.Converters
-import com.dmm.recetario.data.local.database.dao.CategoryDAO
-import com.dmm.recetario.data.local.database.dao.RecipeDAO
-import com.dmm.recetario.data.local.database.dao.UserDAO
+import com.dmm.recetario.data.local.database.dao.CategoryDao
+import com.dmm.recetario.data.local.database.dao.RecipeDao
+import com.dmm.recetario.data.local.database.dao.UserDao
 import com.google.gson.Gson
 import dagger.Module
 import dagger.Provides
@@ -31,19 +31,19 @@ object RoomModule {
 
     @Provides
     @Singleton
-    fun provideUserDAO(db: AppDatabase): UserDAO {
+    fun provideUserDao(db: AppDatabase): UserDao {
         return db.userDao()
     }
 
     @Provides
     @Singleton
-    fun provideCategoryDAO(db: AppDatabase): CategoryDAO {
+    fun provideCategoryDao(db: AppDatabase): CategoryDao {
         return db.categoryDao()
     }
 
     @Provides
     @Singleton
-    fun provideRecipeDAO(db: AppDatabase): RecipeDAO {
+    fun provideRecipeDao(db: AppDatabase): RecipeDao {
         return db.recipeDao()
     }
 

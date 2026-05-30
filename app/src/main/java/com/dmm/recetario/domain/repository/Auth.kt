@@ -1,7 +1,5 @@
 package com.dmm.recetario.domain.repository
 
-import retrofit2.Response
-
 data class LoginData (
     val email: String,
     val password: String
@@ -29,11 +27,11 @@ data class MeResponse (
 )
 
 interface AuthRepository {
-    suspend fun login(data: LoginData): Response<LoginResponse>
+    suspend fun login(data: LoginData): LoginResponse
 
-    suspend fun register(data: RegisterData): Response<LoginResponse>
+    suspend fun register(data: RegisterData): LoginResponse
 
-    suspend fun logout(): Response<Unit>
+    suspend fun logout()
 
-    suspend fun me(): Response<MeResponse>
+    suspend fun me(): MeResponse
 }

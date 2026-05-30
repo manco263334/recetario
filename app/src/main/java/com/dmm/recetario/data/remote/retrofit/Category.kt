@@ -12,7 +12,7 @@ import retrofit2.http.PUT
 import retrofit2.http.Path
 import retrofit2.http.Query
 
-interface APICategoryService {
+interface CategoryRemote {
     @POST("categories")
     suspend fun createCategory (
         @Body data: Category
@@ -20,15 +20,15 @@ interface APICategoryService {
 
     @GET("categories")
     suspend fun getAllCategories (
-        @Query("page") page: Int = 0,
-        @Query("size") size: Int = 10,
-        @Query("withRecipes") withRecipes: Boolean? = null
+        @Query("page") page: Int,
+        @Query("size") size: Int,
+        @Query("withRecipes") withRecipes: Boolean?
     ): Response<PageResponse<CategoryDTO>>
 
     @GET("categories/{id}")
     suspend fun getCategory (
         @Path("id") id: String,
-        @Query("withRecipes") withRecipes: Boolean? = null
+        @Query("withRecipes") withRecipes: Boolean?
     ): Response<CategoryDTO>
 
     @PUT("categories/{id}")

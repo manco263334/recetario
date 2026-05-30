@@ -1,0 +1,39 @@
+package com.dmm.recetario.data.repository
+
+import com.dmm.recetario.core.utils.extension.isNotNull
+import com.dmm.recetario.core.utils.handler.handleApiCall
+import com.dmm.recetario.data.remote.retrofit.AuthRemote
+import com.dmm.recetario.domain.repository.AuthRepository
+import com.dmm.recetario.domain.repository.LoginData
+import com.dmm.recetario.domain.repository.LoginResponse
+import com.dmm.recetario.domain.repository.MeResponse
+import com.dmm.recetario.domain.repository.RegisterData
+import jakarta.inject.Inject
+
+class AuthRepositoryImp (
+    private val remote: AuthRemote
+): AuthRepository {
+    override suspend fun login(data: LoginData): LoginResponse {
+        val response = handleApiCall { remote.login(data) }
+
+        return response ?: throw NoSuchElementException("Credenciales Inválidas")
+    }
+
+    override suspend fun register(data: RegisterData): LoginResponse {
+        val response = handleApiCall { remote.register(data) }
+
+        assert(response.isNotNull())
+
+        return response!!
+    }
+
+    override suspend fun logout() {
+        handleApiCall { remote.logout() }
+    }
+
+    override suspend fun me(): MeResponse  {
+        val response = handleApiCall { remote.me() }
+
+        return response!!
+    }
+}
